@@ -319,3 +319,12 @@ error.glsl
 
 # C# Dev Kit cache file
 *.lscache
+
+# Cognition / SS14+JEV local (Phase 0)
+Cognition/**/secrets*
+Cognition/fixtures/replay/**/live-*
+Cognition/data/
+*.sqlite
+docs/reports/**/raw/
+.env
+.env.*

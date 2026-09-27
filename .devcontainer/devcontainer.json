@@ -1,0 +1,5 @@
+{
+  "name": "Ambiente Seguro Cursor",
+  "image": "mcr.microsoft.com/devcontainers/universal:linux",
+  "remoteUser": "codespace"
+}

@@ -1,0 +1,47 @@
+# Local single-player / cognition-dev server config.
+# Pass via: --config-file Cognition/config/server_local.toml
+# CVar names verified against Robust.Shared/CVars.cs and Content.Shared/CCVar (Phase 0.4).
+
+[log]
+path = "logs"
+format = "log_%(date)s-%(time)s.txt"
+level = 1
+enabled = true
+
+[net]
+tickrate = 30
+port = 1212
+# Localhost only (phase0: server bound to localhost)
+bindto = "127.0.0.1"
+max_connections = 8
+
+[status]
+enabled = true
+# Status bind follows net.port when unset
+
+[hub]
+advertise = false
+
+[auth]
+# AuthMode.Disabled = 2 (Robust.Shared/Network/AuthMode.cs)
+mode = 2
+allowlocal = true
+
+[console]
+loginlocal = true
+
+[game]
+hostname = "SS14+JEV local"
+lobbyenabled = false
+lobbyduration = 10
+# No-antagonist default. Sandbox is the practical local preset with map Dev
+# (Extended also has no antag rules; Sandbox is simpler for cognition work).
+defaultpreset = "Sandbox"
+fallbackenabled = true
+fallbackpreset = "Sandbox"
+map = "Dev"
+role_timers = false
+
+[events]
+# Station random events off during cognition early phases (optional; Extended still loads without antag rules)
+enabled = false
