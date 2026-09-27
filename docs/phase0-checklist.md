@@ -42,13 +42,13 @@ Verify every CVar name before using it; record in `docs/ss14-cvars.md`.
 - [x] RobustToolbox target framework recorded: **net10.0** (`RobustToolbox/MSBuild/Robust.Properties.targets`)
 
 ## 0.7 Recon for later phases (read-only)
-- [ ] Write `docs/ss14-recon.md` (deferred — next agent pass after GATE).
+- [x] Write `docs/ss14-recon.md` (9 topics + quick reference for the Cognition bridge).
 
 ## 0.8 License audit prep (RNF-07)
-- [ ] List asset license files in `docs/licenses.md` (deferred).
+- [x] List asset license files in `docs/licenses.md` (inventory only; 62 NC textures + NC audio dirs flagged, engine GPLv3 pre-2019 noted).
 
 ## Exit criteria / GATE
 - [x] Build green; baseline report started.
 - [x] Launcher scripts ready; local round play verified (walk / pickup / door).
-- [~] `docs/ss14-cvars.md` written; recon + licenses pending.
+- [x] `docs/ss14-cvars.md`, `docs/ss14-recon.md`, `docs/licenses.md` exist.
 - [ ] **GATE:** owner approval before Phase 1.
