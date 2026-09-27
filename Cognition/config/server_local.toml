@@ -41,7 +41,32 @@ fallbackenabled = true
 fallbackpreset = "Sandbox"
 map = "Dev"
 role_timers = false
+# Dev map only has Captain slots; default new-character job (Passenger) would
+# leave the player as an observer ghost. Same fix as ConfigPresets/Build/development.toml.
+new_character_jobs = "Passenger, Captain"
 
 [events]
 # Station random events off during cognition early phases (optional; Extended still loads without antag rules)
 enabled = false
+
+# Mirrors Resources/ConfigPresets/Build/development.toml: spawn directly on the
+# station (no arrivals shuttle seat-buckle), no emergency shuttle / round auto-end,
+# no extra grids or procgen preload (faster start, lower RAM).
+[shuttle]
+arrivals = false
+emergency = false
+auto_call_time = 0
+grid_fill = false
+preload_grids = false
+
+[procgen]
+preload = false
+
+[physics]
+grid_splitting = false
+
+[afk]
+time = 0
+
+[admin]
+afk_time = 0
