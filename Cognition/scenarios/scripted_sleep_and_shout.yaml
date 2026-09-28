@@ -1,0 +1,34 @@
+id: scripted_sleep_and_shout
+description: A tired character sleeps in bed and is woken by a shout from across the room.
+requirements: [RS-01, RS-05, RDev-01]
+driver: scripted
+seed: 1
+duration_s: 8
+map: |
+  ###########
+  #B........#
+  ###########
+characters:
+  - seed: npc_08
+    description: man in a botanist's apron
+    at: [1, 1]
+    needs: { fatigue: 85 }
+  - seed: npc_09
+    description: woman in a captain's coat
+    at: [8, 1]
+script:
+  - at_s: 0
+    do: { who: npc_08, verb: sleep, target: bed1 }
+  - at_s: 5
+    say: { who: npc_09, text: wake up, volume: shout }
+expect:
+  - at_s: 1
+    asleep: { who: npc_08 }
+  - within_s: 1
+    event: { who: npc_08, kind: fell_asleep }
+  - at_s: 4
+    sees: { who: npc_08, what: npc_09, value: false }
+  - within_s: 6
+    event: { who: npc_08, kind: woke }
+  - at_end: true
+    asleep: { who: npc_08, value: false }

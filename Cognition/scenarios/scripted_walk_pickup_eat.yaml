@@ -1,0 +1,41 @@
+id: scripted_walk_pickup_eat
+description: A hungry character walks to visible food, picks it up and eats it.
+requirements: [RS-02, RJ-05, RDev-01]
+driver: scripted
+seed: 1
+duration_s: 10
+map: |
+  ##########
+  #........#
+  #........#
+  ##########
+characters:
+  - seed: npc_01
+    description: woman in a chef's uniform
+    at: [1, 1]
+    needs: { hunger: 70 }
+items:
+  - id: sandwich
+    kind: food
+    name: sandwich
+    at: [6, 1]
+script:
+  - at_s: 0
+    do: { who: npc_01, verb: move, destination: sandwich }
+  - at_s: 3
+    do: { who: npc_01, verb: pickup, item: sandwich }
+  - at_s: 4
+    do: { who: npc_01, verb: eat, item: sandwich }
+expect:
+  - within_s: 2
+    event: { who: npc_01, kind: action_completed, verb: move }
+  - at_s: 3.5
+    holding: { who: npc_01, item: sandwich }
+  - within_s: 5
+    event: { who: npc_01, kind: action_completed, verb: eat }
+  - never: true
+    event: { who: npc_01, kind: action_failed }
+  - at_end: true
+    need: { who: npc_01, need: hunger, below: 40 }
+  - at_end: true
+    exists: { item: sandwich, value: false }

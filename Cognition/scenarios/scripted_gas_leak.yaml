@@ -1,0 +1,30 @@
+id: scripted_gas_leak
+description: A plasma leak thins the air until the character suffocates and takes damage; the next room is safe.
+requirements: [RS-06, RP-08, RDev-01]
+driver: scripted
+seed: 1
+duration_s: 30
+map: |
+  ###########
+  #....#....#
+  #....#....#
+  ###########
+characters:
+  - seed: npc_06
+    description: man in a cargo uniform
+    at: [2, 1]
+  - seed: npc_07
+    description: woman in a medical uniform
+    at: [8, 1]
+script:
+  - at_s: 1
+    leak: { id: leak, at: [3, 2], radius: 4, gas: plasma }
+expect:
+  - within_s: 30
+    event: { who: npc_06, kind: damaged }
+  - at_end: true
+    damage: { who: npc_06, above: 0 }
+  - at_end: true
+    damage: { who: npc_07, below: 0.01 }
+  - never: true
+    event: { who: npc_07, kind: damaged }

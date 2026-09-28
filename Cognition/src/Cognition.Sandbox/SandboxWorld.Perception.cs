@@ -176,8 +176,10 @@ public sealed partial class SandboxWorld
                 continue;
             }
 
-            listener.HeardBuffer.Add(new RawSound("speech", Center(speaker.Cell), loudness, walls, Key(speaker.Guid),
-                speaker.Description, intent.Text, volume, addressee));
+            var sound = new RawSound("speech", Center(speaker.Cell), loudness, walls, Key(speaker.Guid),
+                speaker.Description, intent.Text, volume, addressee);
+            listener.HeardBuffer.Add(sound);
+            _heardLog.Add((Clock.Seconds, Key(listener.Guid), sound));
         }
 
         Emit(new WorldEvent(Clock.Seconds, WorldEventKind.Spoke, Key(speaker.Guid), ActionVerb.Speak, intent.TargetRef,

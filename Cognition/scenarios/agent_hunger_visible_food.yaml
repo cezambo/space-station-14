@@ -1,0 +1,27 @@
+id: agent_hunger_visible_food
+description: A very hungry character sees food on a table nearby and nothing else to do. The mind should eat it.
+requirements: [RS-02, RJ-01, RJ-05]
+driver: agent
+seed: 1
+duration_s: 120
+map: |
+  ##########
+  #...T....#
+  #........#
+  #........#
+  ##########
+characters:
+  - seed: npc_01
+    description: woman in a chef's uniform
+    at: [1, 3]
+    needs: { hunger: 88 }
+items:
+  - id: sandwich
+    kind: food
+    name: sandwich
+    at: [4, 1]
+expect:
+  - within_s: 120
+    event: { who: npc_01, kind: action_completed, verb: eat, item: sandwich }
+  - at_end: true
+    need: { who: npc_01, need: hunger, below: 60 }

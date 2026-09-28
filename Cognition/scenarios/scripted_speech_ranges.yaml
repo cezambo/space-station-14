@@ -1,0 +1,35 @@
+id: scripted_speech_ranges
+description: Whispers reach only the person next to you; normal speech carries across the room.
+requirements: [RS-05, RJ-07, RDev-01]
+driver: scripted
+seed: 1
+duration_s: 3
+map: |
+  ##############
+  #............#
+  ##############
+characters:
+  - seed: npc_03
+    description: woman in a lab coat
+    at: [1, 1]
+    knows: [npc_04]
+  - seed: npc_04
+    description: man in a security vest
+    at: [2, 1]
+  - seed: npc_05
+    description: person in a janitor's jumpsuit
+    at: [9, 1]
+script:
+  - at_s: 0
+    say: { who: npc_03, text: the code is four one two, volume: whisper }
+  - at_s: 1
+    say: { who: npc_03, text: lunch is ready, volume: normal }
+expect:
+  - within_s: 1
+    hears: { who: npc_04, text: four one two }
+  - at_end: true
+    hears: { who: npc_05, text: four one two, value: false }
+  - within_s: 2
+    hears: { who: npc_05, text: lunch is ready }
+  - within_s: 2
+    event: { who: npc_03, kind: spoke }

@@ -30,7 +30,11 @@ public sealed partial class SandboxWorld : IWorldAdapter
     private readonly Dictionary<Cell, Container> _containers = [];
     private readonly List<GasLeak> _leaks = [];
     private readonly Dictionary<Cell, string> _puddles = [];
+    private readonly List<(double At, string ListenerGuid, RawSound Sound)> _heardLog = [];
     private HashSet<Cell>? _leakArea;
+
+    /// <summary>Every delivery of speech to a listener, for assertions; perception reads its own buffer.</summary>
+    public IReadOnlyList<(double At, string ListenerGuid, RawSound Sound)> HeardLog => _heardLog;
 
     public SandboxOptions Options { get; }
     public Grid Grid { get; }
@@ -229,6 +233,8 @@ public sealed partial class SandboxWorld : IWorldAdapter
     }
 
     public Entity? Entity(string @ref) => _entities.GetValueOrDefault(@ref);
+
+    internal Bed? BedAt(Cell cell) => _beds.GetValueOrDefault(cell);
 
     public Agent AgentByGuid(string guid) =>
         _byGuid.TryGetValue(guid, out var a) ? a : throw new KeyNotFoundException($"no agent {guid}");

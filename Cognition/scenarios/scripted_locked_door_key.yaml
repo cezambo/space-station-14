@@ -1,0 +1,37 @@
+id: scripted_locked_door_key
+description: A character unlocks a locked door with its key, opens it and walks through.
+requirements: [RS-03, RJ-05, RDev-01]
+driver: scripted
+seed: 1
+duration_s: 6
+map: |
+  #######
+  #..L..#
+  #######
+characters:
+  - seed: npc_02
+    description: man in engineering overalls
+    at: [2, 1]
+    holding:
+      - id: brass_key
+        kind: key
+        name: brass key
+        opens: door1
+script:
+  - at_s: 0
+    do: { who: npc_02, verb: move, direction: east, extent: one_step }
+  - at_s: 1
+    do: { who: npc_02, verb: unlock, target: door1, item: brass_key }
+  - at_s: 1.5
+    do: { who: npc_02, verb: open, target: door1 }
+  - at_s: 2
+    do: { who: npc_02, verb: move, direction: east, extent: until_obstacle }
+expect:
+  - at_s: 0.5
+    event: { who: npc_02, kind: action_failed, detail: no_path }
+  - at_s: 1.2
+    door: { ref: door1, state: closed }
+  - at_end: true
+    door: { ref: door1, state: open }
+  - at_end: true
+    near: { who: npc_02, at: [5, 1], within: 0 }

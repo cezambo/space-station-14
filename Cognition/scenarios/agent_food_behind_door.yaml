@@ -1,0 +1,29 @@
+id: agent_food_behind_door
+description: >
+  A hungry character is in a room with a closed door. The fridge with food is in the next room, out of sight.
+  The mind should open the door, find the fridge and eat.
+requirements: [RS-02, RS-03, RJ-03, RJ-05]
+driver: agent
+seed: 1
+duration_s: 240
+map: |
+  ###########
+  #....#...F#
+  #....D....#
+  #....#....#
+  ###########
+characters:
+  - seed: npc_02
+    description: man in engineering overalls
+    at: [1, 2]
+    needs: { hunger: 85 }
+items:
+  - id: apple
+    kind: food
+    name: apple
+    in: fridge1
+expect:
+  - within_s: 240
+    event: { who: npc_02, kind: action_completed, verb: open, target: door1 }
+  - within_s: 240
+    event: { who: npc_02, kind: action_completed, verb: eat, item: apple }

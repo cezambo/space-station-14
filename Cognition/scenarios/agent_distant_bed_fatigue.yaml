@@ -1,0 +1,22 @@
+id: agent_distant_bed_fatigue
+description: >
+  An exhausted character sees a bed at the far end of a corridor (9 tiles; fatigue narrows sight to about
+  9.6). The mind should walk there and sleep in it rather than doze off on the floor.
+requirements: [RS-01, RJ-03, RJ-05]
+driver: agent
+seed: 1
+duration_s: 180
+map: |
+  ############
+  #.........B#
+  ############
+characters:
+  - seed: npc_08
+    description: man in a botanist's apron
+    at: [1, 1]
+    needs: { fatigue: 92 }
+expect:
+  - within_s: 180
+    event: { who: npc_08, kind: fell_asleep, detail: voluntary }
+  - at_end: true
+    near: { who: npc_08, of: bed1, within: 0 }
