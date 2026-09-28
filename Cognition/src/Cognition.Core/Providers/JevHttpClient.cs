@@ -65,14 +65,7 @@ public sealed class JevHttpClient : IJevClient, IDisposable
     /// <summary><c>x-typesafe-request-id</c> is what the live API sends (observed 2026-09-28).</summary>
     private static readonly string[] RequestIdHeaders = ["x-typesafe-request-id", "x-request-id"];
 
-    /// <summary>Cloudflare session cookies; never useful and not worth persisting.</summary>
-    private static readonly HashSet<string> DroppedHeaders = new(StringComparer.OrdinalIgnoreCase) { "Set-Cookie" };
-
-    public static bool IsRetryable(HttpStatusCode status)
-    {
-        var code = (int)status;
-        return code is 408 or 429 or >= 500 and <= 599;
-    }
+    public static bool IsRetryable(HttpStatusCode status) => HttpRetry.IsRetryableStatus(status);
 
     public async Task<JevResponse> EvaluateAsync(JevRequest request, CancellationToken ct)
     {
@@ -119,7 +112,7 @@ public sealed class JevHttpClient : IJevClient, IDisposable
             stopwatch.Stop();
             using (response)
             {
-                Report(request, attempt, json, response, HeadersOf(response), body, stopwatch.Elapsed, null);
+                Report(request, attempt, json, response, HttpRetry.HeadersOf(response), body, stopwatch.Elapsed, null);
 
                 if (response.IsSuccessStatusCode)
                     return BuildResponse(request, response, body, stopwatch.Elapsed, attempt);
@@ -151,46 +144,16 @@ public sealed class JevHttpClient : IJevClient, IDisposable
         };
     }
 
-    /// <summary>Exponential backoff; jitter subtracts up to <c>backoff_jitter</c> of the delay.</summary>
-    internal TimeSpan Backoff(int attempt)
-    {
-        var baseMs = Math.Min(_config.BackoffInitialMs * Math.Pow(2, attempt - 1), _config.BackoffMaxMs);
-        return TimeSpan.FromMilliseconds(baseMs * (1 - _config.BackoffJitter * _options.NextRandom()));
-    }
+    internal TimeSpan Backoff(int attempt) =>
+        HttpRetry.Backoff(attempt, _config.BackoffInitialMs, _config.BackoffMaxMs, _config.BackoffJitter,
+            _options.NextRandom());
 
-    /// <summary>
-    /// Honors <c>retry-after-ms</c> then <c>Retry-After</c>, adding up to <c>backoff_jitter</c> on top so
-    /// the wait is never shorter than asked. Returns null when the server asks for more than
-    /// <see cref="JevHttpClientOptions.MaxRetryAfter"/>.
-    /// </summary>
-    internal TimeSpan? RetryDelay(HttpResponseMessage response, int attempt)
-    {
-        var asked = RetryAfterOf(response);
-        if (asked is null)
-            return Backoff(attempt);
-        if (asked.Value > _options.MaxRetryAfter)
-            return null;
-        return asked.Value * (1 + _config.BackoffJitter * _options.NextRandom());
-    }
+    /// <summary>Null when the server asks for more than <see cref="JevHttpClientOptions.MaxRetryAfter"/>.</summary>
+    internal TimeSpan? RetryDelay(HttpResponseMessage response, int attempt) =>
+        HttpRetry.RetryDelay(response, Backoff(attempt), _options.MaxRetryAfter, _config.BackoffJitter,
+            _options.NextRandom());
 
-    internal static TimeSpan? RetryAfterOf(HttpResponseMessage response)
-    {
-        if (response.Headers.TryGetValues("retry-after-ms", out var msValues)
-            && double.TryParse(msValues.FirstOrDefault(), NumberStyles.Float, CultureInfo.InvariantCulture, out var ms)
-            && ms >= 0)
-            return TimeSpan.FromMilliseconds(ms);
-
-        var retryAfter = response.Headers.RetryAfter;
-        if (retryAfter?.Delta is { } delta)
-            return delta < TimeSpan.Zero ? TimeSpan.Zero : delta;
-        if (retryAfter?.Date is { } date)
-        {
-            var wait = date - DateTimeOffset.UtcNow;
-            return wait < TimeSpan.Zero ? TimeSpan.Zero : wait;
-        }
-
-        return null;
-    }
+    internal static TimeSpan? RetryAfterOf(HttpResponseMessage response) => HttpRetry.RetryAfterOf(response);
 
     private static string RequestIdOf(HttpResponseMessage response)
     {
@@ -201,18 +164,6 @@ public sealed class JevHttpClient : IJevClient, IDisposable
         }
 
         return "local-" + Guid.NewGuid().ToString("N");
-    }
-
-    private static IReadOnlyDictionary<string, string> HeadersOf(HttpResponseMessage response)
-    {
-        var headers = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var (name, values) in response.Headers.Concat(response.Content.Headers))
-        {
-            if (!DroppedHeaders.Contains(name))
-                headers[name] = string.Join(", ", values);
-        }
-
-        return headers;
     }
 
     private void Report(JevRequest request, int attempt, string json, HttpResponseMessage? response,

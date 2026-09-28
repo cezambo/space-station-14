@@ -14,6 +14,10 @@ backoff_jitter = 0.25 # fraction randomly subtracted from each delay
 input_price_usd_per_mtok = 0.042
 output_price_usd_per_mtok = 0.0
 
+# Any OpenAI-compatible /chat/completions endpoint (RM-03). For a local server (llama.cpp, Ollama, tinyllm):
+# api_key_env = "" (no auth), reasoning_effort = "" (not sent), require_parameters = false, prices 0.
+# Prices are only used to estimate the live cost cap; OpenRouter reports the real cost in usage.cost.
+# glm-5.3 models accept reasoning_effort max | high | low only; reasoning is mandatory (GET /models, 2026-09-28).
 [providers.llm.light]
 base_url = "https://openrouter.ai/api/v1"
 model = "z-ai/glm-5.3-flash"
@@ -21,6 +25,15 @@ reasoning_effort = "low"
 api_key_env = "OPENROUTER_API_KEY"
 timeout_ms = 20000
 max_rps = 5
+max_retries = 2
+backoff_initial_ms = 500
+backoff_max_ms = 5000
+backoff_jitter = 0.25
+structured_output = "json_schema" # json_schema | json_object | none; replies are validated locally anyway
+require_parameters = true # OpenRouter: route only to providers that honor response_format/reasoning
+reasoning_allowance_tokens = 2000 # added to the template's output limit, since reasoning counts as output (E-xx)
+input_price_usd_per_mtok = 0.15
+output_price_usd_per_mtok = 0.50
 
 [providers.llm.heavy]
 base_url = "https://openrouter.ai/api/v1"
@@ -29,6 +42,15 @@ reasoning_effort = "max"
 api_key_env = "OPENROUTER_API_KEY"
 timeout_ms = 120000
 max_rps = 2
+max_retries = 2
+backoff_initial_ms = 1000
+backoff_max_ms = 10000
+backoff_jitter = 0.25
+structured_output = "json_schema"
+require_parameters = true
+reasoning_allowance_tokens = 16000
+input_price_usd_per_mtok = 1.40
+output_price_usd_per_mtok = 4.40
 
 [replay]
 mode = "replay" # live | record | replay | replay-strict (CI)

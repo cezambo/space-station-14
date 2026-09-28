@@ -30,18 +30,8 @@ internal sealed class LiveJev : IDisposable
     public static LiveJev? Create(CliOptions options, string? dumpDir, int? timeoutMsOverride = null)
     {
         var config = CognitionConfigLoader.LoadFile(options.ConfigPath);
-        if (!options.Live || options.MaxCostUsd is null)
-        {
-            Console.Error.WriteLine("This command calls the real Jev API. Pass --live --max-cost-usd <N> to run it.");
+        if (!CheckLiveOptIn(options, config, "Jev"))
             return null;
-        }
-
-        if (options.MaxCostUsd.Value <= 0 || options.MaxCostUsd.Value > config.LiveGuard.MaxCostUsdPerRun)
-        {
-            Console.Error.WriteLine(
-                $"--max-cost-usd must be > 0 and <= live_guard.max_cost_usd_per_run ({config.LiveGuard.MaxCostUsdPerRun:0.00}).");
-            return null;
-        }
 
         var jev = config.Providers.Jev;
         if (timeoutMsOverride is { } t)
@@ -55,7 +45,26 @@ internal sealed class LiveJev : IDisposable
         });
 
         return new LiveJev(config with { Providers = config.Providers with { Jev = jev } },
-            new LiveCostGuard(options.MaxCostUsd.Value), http);
+            new LiveCostGuard(options.MaxCostUsd!.Value), http);
+    }
+
+    /// <summary>False (and prints why) unless <c>--live --max-cost-usd N</c> is given with N within live_guard.</summary>
+    public static bool CheckLiveOptIn(CliOptions options, CognitionConfig config, string api)
+    {
+        if (!options.Live || options.MaxCostUsd is null)
+        {
+            Console.Error.WriteLine($"This command calls the real {api} API. Pass --live --max-cost-usd <N> to run it.");
+            return false;
+        }
+
+        if (options.MaxCostUsd.Value <= 0 || options.MaxCostUsd.Value > config.LiveGuard.MaxCostUsdPerRun)
+        {
+            Console.Error.WriteLine(
+                $"--max-cost-usd must be > 0 and <= live_guard.max_cost_usd_per_run ({config.LiveGuard.MaxCostUsdPerRun:0.00}).");
+            return false;
+        }
+
+        return true;
     }
 
     private static int _dumpCounter;

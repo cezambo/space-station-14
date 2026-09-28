@@ -11,6 +11,11 @@ public static partial class CognitionConfigValidator
     /// <summary>RM-07: at most three retries per call.</summary>
     public const int JevMaxRetriesCeiling = 3;
 
+    public const int LlmMaxRetriesCeiling = 3;
+
+    /// <summary>OpenRouter chat completions <c>reasoning_effort</c> enum (docs/openai-compat-wire-format.md).</summary>
+    private static readonly string[] ReasoningEfforts = ["none", "minimal", "low", "medium", "high", "xhigh", "max"];
+
     private static readonly string[] Decays = ["linear", "exponential"];
     private static readonly string[] StubbornnessCaps = ["none", "2x", "3x"];
 
@@ -116,10 +121,20 @@ public static partial class CognitionConfigValidator
     {
         AbsoluteHttpUrl($"{p}.base_url", l.BaseUrl, e);
         NotEmpty($"{p}.model", l.Model, e);
-        NotEmpty($"{p}.reasoning_effort", l.ReasoningEffort, e);
-        EnvVarName($"{p}.api_key_env", l.ApiKeyEnv, e);
+        if (l.ReasoningEffort.Length > 0 && !ReasoningEfforts.Contains(l.ReasoningEffort))
+            e.Add($"{p}.reasoning_effort: '{l.ReasoningEffort}' is not empty or one of: {string.Join(", ", ReasoningEfforts)}");
+        if (l.ApiKeyEnv.Length > 0)
+            EnvVarName($"{p}.api_key_env", l.ApiKeyEnv, e);
         Positive($"{p}.timeout_ms", l.TimeoutMs, e);
         Positive($"{p}.max_rps", l.MaxRps, e);
+        if (l.MaxRetries is < 0 or > LlmMaxRetriesCeiling)
+            e.Add($"{p}.max_retries: must be between 0 and {LlmMaxRetriesCeiling}");
+        Positive($"{p}.backoff_initial_ms", l.BackoffInitialMs, e);
+        Ordered(e, ($"{p}.backoff_initial_ms", l.BackoffInitialMs), ($"{p}.backoff_max_ms", l.BackoffMaxMs));
+        Probability($"{p}.backoff_jitter", l.BackoffJitter, e);
+        NonNegative($"{p}.reasoning_allowance_tokens", l.ReasoningAllowanceTokens, e);
+        NonNegative($"{p}.input_price_usd_per_mtok", (double)l.InputPriceUsdPerMtok, e);
+        NonNegative($"{p}.output_price_usd_per_mtok", (double)l.OutputPriceUsdPerMtok, e);
     }
 
     private static void ValidateEmotion(EmotionConfig m, List<string> e)

@@ -27,13 +27,34 @@ public sealed record JevProviderConfig(
     decimal InputPriceUsdPerMtok,
     decimal OutputPriceUsdPerMtok);
 
+/// <summary>How the JSON Schema of a request is passed to the endpoint. The reply is validated locally in every mode.</summary>
+public enum StructuredOutputMode
+{
+    JsonSchema,
+    JsonObject,
+    None,
+}
+
+/// <summary>
+/// An OpenAI-compatible chat completions endpoint (RM-03, RM-04). An empty <see cref="ReasoningEffort"/> is
+/// not sent; an empty <see cref="ApiKeyEnv"/> means no auth (local servers).
+/// </summary>
 public sealed record LlmProviderConfig(
     string BaseUrl,
     string Model,
     string ReasoningEffort,
     string ApiKeyEnv,
     int TimeoutMs,
-    double MaxRps);
+    double MaxRps,
+    int MaxRetries,
+    int BackoffInitialMs,
+    int BackoffMaxMs,
+    double BackoffJitter,
+    StructuredOutputMode StructuredOutput,
+    bool RequireParameters,
+    int ReasoningAllowanceTokens,
+    decimal InputPriceUsdPerMtok,
+    decimal OutputPriceUsdPerMtok);
 
 public sealed record ProvidersConfig(JevProviderConfig Jev, LlmProviderConfig Light, LlmProviderConfig Heavy);
 

@@ -61,8 +61,8 @@ public sealed class JevProtocolException : JevException
     }
 }
 
-/// <summary>The live run would exceed its USD cap (RDev-04); the request was not sent.</summary>
-public sealed class CostCapExceededException : JevException
+/// <summary>The live run would exceed its USD cap (RDev-04); the request (Jev or LLM) was not sent.</summary>
+public sealed class CostCapExceededException : Exception
 {
     public CostCapExceededException(decimal spent, decimal estimate, decimal cap)
         : base($"Live cost cap reached: spent ${spent:0.000000} + next ~${estimate:0.000000} > cap ${cap:0.00}")

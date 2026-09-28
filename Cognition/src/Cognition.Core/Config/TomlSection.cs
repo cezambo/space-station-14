@@ -109,6 +109,16 @@ internal sealed partial class TomlSection
         return (decimal)Double(key);
     }
 
+    public bool Bool(string key)
+    {
+        if (!TryGet(key, out var raw))
+            return false;
+        if (raw is bool b)
+            return b;
+        TypeError(key, "boolean", raw);
+        return false;
+    }
+
     private double TypeErrorDefault(string key, string expected, object raw)
     {
         TypeError(key, expected, raw);

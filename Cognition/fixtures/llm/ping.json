@@ -1,0 +1,18 @@
+{
+  "repair_message": "Your previous reply did not match the required JSON schema:\n{{errors}}\nReply again with only the corrected JSON object.",
+  "calls": [
+    {
+      "purpose": "llm_ping_plain",
+      "system": "You write one short line of in-character dialogue for a person on a space station. At most 2 sentences; plain spoken English; no stage directions, no quotation marks, no emojis.",
+      "user": "Maya, a tired station engineer, answers Bob, who just said the kitchen is on fire and asked for an extinguisher.",
+      "max_output_tokens": 80
+    },
+    {
+      "purpose": "llm_ping_schema",
+      "system": "You summarize a character's day on a space station. Reply with a JSON object only.",
+      "user": "Maya, a station engineer, fixed a broken air vent in the morning, ate lunch with Bob, and helped put out a kitchen fire in the evening. She is exhausted but proud. Write her daily summary.",
+      "schema": {"type":"object","required":["full","short"],"properties":{"full":{"type":"string","description":"2-3 sentences, first person, past tense"},"short":{"type":"string","description":"one sentence"}}},
+      "max_output_tokens": 300
+    }
+  ]
+}

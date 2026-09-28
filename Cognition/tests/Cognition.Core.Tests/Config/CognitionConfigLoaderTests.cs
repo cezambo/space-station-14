@@ -154,6 +154,56 @@ public sealed class CognitionConfigLoaderTests
     }
 
     [Test]
+    public void LlmProvidersLoadStructuredOutputAndPrices()
+    {
+        // RM-03, RM-04
+        var config = Parse(RepoToml);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(config.Providers.Light.StructuredOutput, Is.EqualTo(StructuredOutputMode.JsonSchema));
+            Assert.That(config.Providers.Light.RequireParameters, Is.True);
+            Assert.That(config.Providers.Light.ReasoningEffort, Is.EqualTo("low"));
+            Assert.That(config.Providers.Heavy.OutputPriceUsdPerMtok, Is.EqualTo(4.40m));
+            Assert.That(config.Providers.Heavy.ReasoningAllowanceTokens, Is.EqualTo(16000));
+        });
+    }
+
+    [Test]
+    public void UnknownReasoningEffortIsRejected()
+    {
+        // RM-04
+        var errors = ErrorsOf(Mutate("reasoning_effort = \"low\"", "reasoning_effort = \"ultra\""));
+
+        Assert.That(errors, Has.Some.StartsWith("providers.llm.light.reasoning_effort"));
+    }
+
+    [Test]
+    public void LocalEndpointWithoutKeyOrEffortIsValid()
+    {
+        // RM-03: llama.cpp / Ollama need no auth and may not accept reasoning_effort.
+        var toml = Mutate("base_url = \"https://openrouter.ai/api/v1\"\nmodel = \"z-ai/glm-5.3-flash\"\n"
+            + "reasoning_effort = \"low\"\napi_key_env = \"OPENROUTER_API_KEY\"",
+            "base_url = \"http://127.0.0.1:8080/v1\"\nmodel = \"local\"\nreasoning_effort = \"\"\napi_key_env = \"\"");
+
+        var config = Parse(toml);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(config.Providers.Light.ApiKeyEnv, Is.Empty);
+            Assert.That(config.Providers.Light.ReasoningEffort, Is.Empty);
+        });
+    }
+
+    [Test]
+    public void LlmStructuredOutputModeMustBeKnown()
+    {
+        var errors = ErrorsOf(Mutate("structured_output = \"json_schema\" #", "structured_output = \"xml\" #"));
+
+        Assert.That(errors, Has.Some.StartsWith("providers.llm.light.structured_output"));
+    }
+
+    [Test]
     public void UnknownKeyIsReported()
     {
         var errors = ErrorsOf(Mutate("[speech]", "[speech]\nmin_intervall_s = 3.0"));

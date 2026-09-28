@@ -23,6 +23,14 @@ public static class CognitionConfigLoader
         ["reduced"] = FanoutMode.Reduced,
     };
 
+    private static readonly IReadOnlyDictionary<string, StructuredOutputMode> StructuredOutputModes =
+        new Dictionary<string, StructuredOutputMode>
+        {
+            ["json_schema"] = StructuredOutputMode.JsonSchema,
+            ["json_object"] = StructuredOutputMode.JsonObject,
+            ["none"] = StructuredOutputMode.None,
+        };
+
     public static CognitionConfig LoadFile(string path, Func<string, string?>? getEnv = null)
     {
         var fullPath = System.IO.Path.GetFullPath(path);
@@ -196,7 +204,16 @@ public static class CognitionConfigLoader
             ReasoningEffort: s.String("reasoning_effort"),
             ApiKeyEnv: s.String("api_key_env"),
             TimeoutMs: s.Int("timeout_ms"),
-            MaxRps: s.Double("max_rps"));
+            MaxRps: s.Double("max_rps"),
+            MaxRetries: s.Int("max_retries"),
+            BackoffInitialMs: s.Int("backoff_initial_ms"),
+            BackoffMaxMs: s.Int("backoff_max_ms"),
+            BackoffJitter: s.Double("backoff_jitter"),
+            StructuredOutput: s.Enum("structured_output", StructuredOutputModes),
+            RequireParameters: s.Bool("require_parameters"),
+            ReasoningAllowanceTokens: s.Int("reasoning_allowance_tokens"),
+            InputPriceUsdPerMtok: s.Decimal("input_price_usd_per_mtok"),
+            OutputPriceUsdPerMtok: s.Decimal("output_price_usd_per_mtok"));
     }
 
     /// <summary>Integer values are ordinal Score levels; floats are probabilities (RJ-18, RJ-19).</summary>
