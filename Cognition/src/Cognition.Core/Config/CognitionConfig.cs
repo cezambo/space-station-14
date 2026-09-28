@@ -172,7 +172,7 @@ public sealed record MemoryConfig(
     int DailyWordsMin,
     int DailyWordsMax);
 
-public sealed record ConsolidationConfig(int StepMaxRetries);
+public sealed record ConsolidationConfig(int StepMaxRetries, int CommitAttempts);
 
 public sealed record PersistenceConfig(string SqlitePath);
 

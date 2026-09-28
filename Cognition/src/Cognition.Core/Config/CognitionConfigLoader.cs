@@ -100,6 +100,7 @@ public static class CognitionConfigLoader
         var opinion = root.Table("opinion");
         var sleep = root.Table("sleep");
         var memory = root.Table("memory");
+        var consolidation = root.Table("consolidation");
 
         return new CognitionConfig(
             BaseDirectory: baseDirectory,
@@ -201,7 +202,9 @@ public static class CognitionConfigLoader
                 DailyCompactCount: memory.Int("daily_compact_count"),
                 DailyWordsMin: memory.Int("daily_words_min"),
                 DailyWordsMax: memory.Int("daily_words_max")),
-            Consolidation: new ConsolidationConfig(root.Table("consolidation").Int("step_max_retries")),
+            Consolidation: new ConsolidationConfig(
+                StepMaxRetries: consolidation.Int("step_max_retries"),
+                CommitAttempts: consolidation.Int("commit_attempts")),
             Persistence: new PersistenceConfig(root.Table("persistence").String("sqlite_path")),
             Telemetry: new TelemetryConfig(root.Table("telemetry").String("dir")));
     }

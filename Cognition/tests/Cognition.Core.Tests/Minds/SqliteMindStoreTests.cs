@@ -213,4 +213,66 @@ public sealed class SqliteMindStoreTests
         SqliteConnection.ClearAllPools();
         Assert.Throws<MindStoreException>(() => NewStore());
     }
+
+    [Test]
+    public void Version1DatabaseGainsCheckpointsAndKeepsItsMinds()
+    {
+        var ana = TestMinds.Ana();
+        Directory.CreateDirectory(_dir);
+        using (var c = new SqliteConnection($"Data Source={_path}"))
+        {
+            c.Open();
+            using var cmd = c.CreateCommand();
+            cmd.CommandText = """
+                CREATE TABLE minds (
+                    stable_guid TEXT PRIMARY KEY,
+                    id TEXT NOT NULL UNIQUE,
+                    version INTEGER NOT NULL,
+                    body TEXT NOT NULL);
+                CREATE TABLE memories (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    stable_guid TEXT NOT NULL REFERENCES minds(stable_guid) ON DELETE CASCADE,
+                    level TEXT NOT NULL,
+                    day INTEGER NOT NULL,
+                    body TEXT NOT NULL);
+                CREATE INDEX memories_by_mind ON memories(stable_guid, level, id);
+                PRAGMA user_version = 1;
+                """;
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = "INSERT INTO minds (stable_guid, id, version, body) VALUES ($g, $id, 0, $body);";
+            cmd.Parameters.AddWithValue("$g", ana.StableGuid.ToString("D"));
+            cmd.Parameters.AddWithValue("$id", ana.Id);
+            cmd.Parameters.AddWithValue("$body", MindJson.Serialize(ana));
+            cmd.ExecuteNonQuery();
+        }
+
+        SqliteConnection.ClearAllPools();
+        var store = NewStore();
+
+        Assert.That(store.Load(ana.StableGuid)!.Ss14Profile.Name, Is.EqualTo(ana.Ss14Profile.Name));
+        store.SaveCheckpoint(ana.StableGuid, 0, "{}");
+        Assert.That(store.LoadCheckpoint(ana.StableGuid)!.BaseVersion, Is.EqualTo(0));
+        Assert.Throws<MindVersionConflictException>(() => store.SaveCheckpoint(ana.StableGuid, 4, "{}"));
+    }
+
+    [Test]
+    public void CommitRetagsMemoriesAddedDuringSleepAndClearsTheCheckpoint()
+    {
+        var store = NewStore();
+        var mind = store.Create(TestMinds.Ana());
+        var before = store.AppendMemory(mind.StableGuid, TestMinds.Recent("before the sleep"));
+        store.SaveCheckpoint(mind.StableGuid, mind.Version, "{}");
+        var during = store.AppendMemory(mind.StableGuid, TestMinds.Recent("a noise during the sleep"));
+
+        store.Commit(new MindCommit(mind with { Sleep = mind.Sleep with { PersonalDay = 13 } }, [], [])
+        {
+            RetagRecent = new MemoryRetag(before.Id, 13),
+            ClearCheckpoint = true,
+        });
+
+        var memories = store.Memories(mind.StableGuid).ToDictionary(m => m.Text);
+        Assert.That(memories["before the sleep"].Day, Is.EqualTo(12));
+        Assert.That(memories["a noise during the sleep"].Day, Is.EqualTo(13));
+        Assert.That(store.LoadCheckpoint(mind.StableGuid), Is.Null);
+    }
 }

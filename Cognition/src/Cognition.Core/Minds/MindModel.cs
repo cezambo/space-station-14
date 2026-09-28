@@ -130,8 +130,8 @@ public sealed record EmotionState(
 /// <summary>RG-03.</summary>
 public sealed record ThinkingBudget(int DailyUnits, int Remaining);
 
-/// <summary>§8. Fatigue is 0-100.</summary>
-public sealed record SleepState(int PersonalDay, double AwakeSeconds, double Fatigue);
+/// <summary>§8. Fatigue is 0-100. <see cref="DeferredSteps"/>: consolidation steps that failed last sleep (RS-12).</summary>
+public sealed record SleepState(int PersonalDay, double AwakeSeconds, double Fatigue, IReadOnlyList<string>? DeferredSteps = null);
 
 public enum ControlMode
 {

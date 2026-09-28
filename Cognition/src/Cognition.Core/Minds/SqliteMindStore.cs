@@ -28,12 +28,23 @@ public sealed class MindStoreException : Exception
 
 /// <summary>
 /// One atomic change (RS-09). <see cref="Mind"/>.Version must equal the stored version. New memories are
-/// written before old ones are deleted, in the same transaction (RMe-04).
+/// written before old ones are deleted, in the same transaction (RMe-04). <see cref="RetagRecent"/> moves recent
+/// memories added after a given id to another day (events during sleep belong to the next day);
+/// <see cref="ClearCheckpoint"/> removes the consolidation checkpoint in the same transaction.
 /// </summary>
 public sealed record MindCommit(Mind Mind, IReadOnlyList<MemoryEntry> AddMemories, IReadOnlyList<long> DeleteMemoryIds)
 {
+    public MemoryRetag? RetagRecent { get; init; }
+    public bool ClearCheckpoint { get; init; }
+
     public static MindCommit Of(Mind mind) => new(mind, [], []);
 }
+
+/// <summary>Recent memories with an id above <see cref="AfterId"/> get <see cref="ToDay"/>.</summary>
+public sealed record MemoryRetag(long AfterId, int ToDay);
+
+/// <summary>A consolidation checkpoint (RS-09): opaque to the store, valid only while the mind is at <see cref="BaseVersion"/>.</summary>
+public sealed record StoredCheckpoint(long BaseVersion, string Body);
 
 public sealed record CommitResult(Mind Mind, IReadOnlyList<MemoryEntry> Added);
 
@@ -48,6 +59,13 @@ public interface IMindStore
     MemoryEntry AppendMemory(Guid stableGuid, MemoryEntry memory);
 
     CommitResult Commit(MindCommit commit);
+
+    /// <summary>Replaces the mind's consolidation checkpoint; fails if the mind no longer has <paramref name="baseVersion"/>.</summary>
+    void SaveCheckpoint(Guid stableGuid, long baseVersion, string body);
+
+    StoredCheckpoint? LoadCheckpoint(Guid stableGuid);
+
+    void DeleteCheckpoint(Guid stableGuid);
 }
 
 /// <summary>
@@ -56,7 +74,7 @@ public interface IMindStore
 /// </summary>
 public sealed class SqliteMindStore : IMindStore
 {
-    public const int SchemaVersion = 1;
+    public const int SchemaVersion = 2;
 
     private readonly string _connectionString;
 
@@ -100,6 +118,24 @@ public sealed class SqliteMindStore : IMindStore
         if (version == SchemaVersion)
             return;
         using var tx = c.BeginTransaction();
+        if (version < 1)
+            CreateV1(c, tx);
+        if (version < 2)
+        {
+            Exec(c, tx, """
+                CREATE TABLE checkpoints (
+                    stable_guid TEXT PRIMARY KEY REFERENCES minds(stable_guid) ON DELETE CASCADE,
+                    base_version INTEGER NOT NULL,
+                    body TEXT NOT NULL);
+                """);
+        }
+
+        Exec(c, tx, $"PRAGMA user_version = {SchemaVersion};");
+        tx.Commit();
+    }
+
+    private static void CreateV1(SqliteConnection c, SqliteTransaction tx)
+    {
         Exec(c, tx, """
             CREATE TABLE minds (
                 stable_guid TEXT PRIMARY KEY,
@@ -114,8 +150,6 @@ public sealed class SqliteMindStore : IMindStore
                 body TEXT NOT NULL);
             CREATE INDEX memories_by_mind ON memories(stable_guid, level, id);
             """);
-        Exec(c, tx, $"PRAGMA user_version = {SchemaVersion};");
-        tx.Commit();
     }
 
     public Mind Create(Mind mind)
@@ -222,11 +256,51 @@ public sealed class SqliteMindStore : IMindStore
 
         OnCommitStep?.Invoke("deleted", Counter(c, tx));
 
+        if (commit.RetagRecent is { } retag)
+        {
+            Exec(c, tx, """
+                UPDATE memories SET day = $d, body = json_set(body, '$.day', $d)
+                WHERE stable_guid = $g AND level = 'recent' AND id > $after;
+                """, ("$d", retag.ToDay), ("$g", Key(mind.StableGuid)), ("$after", retag.AfterId));
+        }
+
+        if (commit.ClearCheckpoint)
+            Exec(c, tx, "DELETE FROM checkpoints WHERE stable_guid = $g;", ("$g", Key(mind.StableGuid)));
+
         var next = mind with { Version = mind.Version + 1 };
         Exec(c, tx, "UPDATE minds SET version = $v, id = $id, body = $body WHERE stable_guid = $g;",
             ("$v", next.Version), ("$id", next.Id), ("$body", MindJson.Serialize(next)), ("$g", Key(mind.StableGuid)));
         tx.Commit();
         return new CommitResult(next, added);
+    }
+
+    public void SaveCheckpoint(Guid stableGuid, long baseVersion, string body)
+    {
+        using var c = Open();
+        using var tx = c.BeginTransaction(deferred: false);
+        var stored = Scalar(c, tx, "SELECT version FROM minds WHERE stable_guid = $g;", ("$g", Key(stableGuid)));
+        var actual = stored is null ? (long?)null : Convert.ToInt64(stored, CultureInfo.InvariantCulture);
+        if (actual != baseVersion)
+            throw new MindVersionConflictException(stableGuid, baseVersion, actual);
+        Exec(c, tx, """
+            INSERT INTO checkpoints (stable_guid, base_version, body) VALUES ($g, $v, $body)
+            ON CONFLICT(stable_guid) DO UPDATE SET base_version = excluded.base_version, body = excluded.body;
+            """, ("$g", Key(stableGuid)), ("$v", baseVersion), ("$body", body));
+        tx.Commit();
+    }
+
+    public StoredCheckpoint? LoadCheckpoint(Guid stableGuid)
+    {
+        using var c = Open();
+        using var cmd = Command(c, null, "SELECT base_version, body FROM checkpoints WHERE stable_guid = $g;", ("$g", Key(stableGuid)));
+        using var r = cmd.ExecuteReader();
+        return r.Read() ? new StoredCheckpoint(r.GetInt64(0), r.GetString(1)) : null;
+    }
+
+    public void DeleteCheckpoint(Guid stableGuid)
+    {
+        using var c = Open();
+        Exec(c, null, "DELETE FROM checkpoints WHERE stable_guid = $g;", ("$g", Key(stableGuid)));
     }
 
     private static MemoryEntry Insert(SqliteConnection c, SqliteTransaction tx, Guid stableGuid, MemoryEntry m)

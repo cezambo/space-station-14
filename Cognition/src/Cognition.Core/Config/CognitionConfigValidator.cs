@@ -146,6 +146,7 @@ public static partial class CognitionConfigValidator
         Ordered(e, ("memory.daily_words_min", m.DailyWordsMin), ("memory.daily_words_max", m.DailyWordsMax));
 
         NonNegative("consolidation.step_max_retries", c.Consolidation.StepMaxRetries, e);
+        Positive("consolidation.commit_attempts", c.Consolidation.CommitAttempts, e);
         NotEmpty("persistence.sqlite_path", c.Persistence.SqlitePath, e);
         NotEmpty("telemetry.dir", c.Telemetry.Dir, e);
 

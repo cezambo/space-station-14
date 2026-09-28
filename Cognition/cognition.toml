@@ -213,7 +213,8 @@ daily_words_min = 120
 daily_words_max = 300
 
 [consolidation]
-step_max_retries = 2
+step_max_retries = 2 # RS-12: then the step is deferred to the next sleep
+commit_attempts = 3 # RS-09: merge + commit retries when the mind changed while consolidating
 
 [persistence]
 sqlite_path = "data/minds.sqlite"

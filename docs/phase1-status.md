@@ -14,7 +14,7 @@ Updated by the agent after each task. "Difficulty" guides which model should tak
 | T1.19 DeepThinkingService | todo | medium | |
 | T1.20 EmotionSystem | todo | **high** | exact RE-03 formulas, property tests |
 | T1.21 Recent memory | todo | medium | |
-| T1.22 Consolidation pipeline | todo | **high** | idempotent, checkpointed, atomic commit |
+| T1.22 Consolidation pipeline | done | | kill/resume covered; steps [1]–[5] are placeholders (Q-10) |
 | T1.23 Daily summary | todo | low | |
 | T1.24 OpinionSystem | todo | **high** | largest task (L) |
 | T1.25 Rupture | todo | medium | |

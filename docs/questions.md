@@ -140,6 +140,20 @@ Implemented as below; weights and bands are in `cognition.toml`, words in `promp
   (not implemented while `fanout = "full"`, D12).
 - Status: open (non-blocking)
 
+## Q-10 (T1.22) Consolidation pipeline choices
+
+- (a) The personal day advances and awake time resets when the consolidation commits, so a kill before the
+  commit leaves the stored mind exactly as it was (RS-09). Fatigue is left alone; the sandbox owns the body.
+- (b) Steps [1]–[5] are deterministic placeholders. The daily summary joins that day's recent memories;
+  T1.23–T1.26 replace the steps. [6] refills the thinking budget (RS-10).
+- (c) `step_max_retries = 2` means two retries after the first failure, then the step is deferred and named on
+  `sleep.deferredSteps`. `commit_attempts = 3`.
+- (d) Memories appended during the sleep (they do not change the mind version) are retagged to the next day
+  in the commit. A commit of the mind body during consolidation is overwritten by the consolidation commit;
+  append memories instead of committing the mind while a sleep is consolidating.
+- (e) Schema version 2 adds a `checkpoints` table. A version-1 database is migrated on open.
+- Status: open (non-blocking)
+
 # Phase 0 questions
 
 - **Q-P0-01:** With `net.bindto = "127.0.0.1"` in `Cognition/config/server_local.toml`, `ss` still showed listen on `0.0.0.0:1212` / `[::]:1212` after Ready. Confirm whether Robust rewrites bind when IPv6 is present, or whether the TOML value needs the dual-stack form (`127.0.0.1,::1`). Hub advertising is already off.
