@@ -148,7 +148,9 @@ public static class CognitionConfigLoader
                 HearingWhisper: perception.Double("hearing_whisper"),
                 HearingNormal: perception.Double("hearing_normal"),
                 HearingShout: perception.Double("hearing_shout"),
-                WallAttenuation: perception.Double("wall_attenuation")),
+                WallAttenuation: perception.Double("wall_attenuation"),
+                Environment: ReadEnvironment(perception.Table("environment"))),
+            Needs: new NeedsConfig(root.Table("needs").DoubleListMap("bands")),
             Speech: new SpeechConfig(
                 MinIntervalS: speech.Double("min_interval_s"),
                 StaleAfterS: speech.Double("stale_after_s"),
@@ -156,7 +158,8 @@ public static class CognitionConfigLoader
             Budget: new BudgetConfig(
                 DailyUnits: budget.Int("daily_units"),
                 LightCost: budget.Int("light_cost"),
-                DeepCost: budget.Int("deep_cost")),
+                DeepCost: budget.Int("deep_cost"),
+                BandBounds: budget.DoubleList("band_bounds")),
             Emotion: new EmotionConfig(
                 Labels: emotion.StringList("labels"),
                 Beta: emotion.Double("beta"),
@@ -182,7 +185,8 @@ public static class CognitionConfigLoader
                 FullSleepMinutes: sleep.Double("full_sleep_minutes"),
                 MinConsolidatedSeconds: sleep.Double("min_consolidated_seconds"),
                 MinFatigueForDayEnd: sleep.Double("min_fatigue_for_day_end"),
-                BedRecoveryMultiplier: sleep.Double("bed_recovery_multiplier")),
+                BedRecoveryMultiplier: sleep.Double("bed_recovery_multiplier"),
+                DayPhaseBounds: sleep.DoubleList("day_phase_bounds")),
             Memory: new MemoryConfig(
                 RecentHardCap: memory.Int("recent_hard_cap"),
                 AggregateWindowS: memory.Double("aggregate_window_s"),
@@ -194,6 +198,20 @@ public static class CognitionConfigLoader
             Consolidation: new ConsolidationConfig(root.Table("consolidation").Int("step_max_retries")),
             Persistence: new PersistenceConfig(root.Table("persistence").String("sqlite_path")),
             Telemetry: new TelemetryConfig(root.Table("telemetry").String("dir")));
+    }
+
+    private static EnvironmentConfig ReadEnvironment(TomlSection s)
+    {
+        return new EnvironmentConfig(
+            PressureHazardLowKpa: s.Double("pressure_hazard_low_kpa"),
+            PressureWarningLowKpa: s.Double("pressure_warning_low_kpa"),
+            PressureWarningHighKpa: s.Double("pressure_warning_high_kpa"),
+            PressureHazardHighKpa: s.Double("pressure_hazard_high_kpa"),
+            TempFreezingK: s.Double("temp_freezing_k"),
+            TempColdK: s.Double("temp_cold_k"),
+            TempHotK: s.Double("temp_hot_k"),
+            TempScorchingK: s.Double("temp_scorching_k"),
+            GasNoticeKpa: s.Double("gas_notice_kpa"));
     }
 
     private static LlmProviderConfig ReadLlm(TomlSection s)

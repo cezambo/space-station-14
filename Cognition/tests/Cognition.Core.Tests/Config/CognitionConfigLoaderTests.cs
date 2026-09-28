@@ -245,6 +245,54 @@ public sealed class CognitionConfigLoaderTests
     }
 
     [Test]
+    public void CategorizerKeysLoad()
+    {
+        var c = Parse(RepoToml);
+
+        Assert.That(c.Perception.Environment.PressureHazardLowKpa, Is.EqualTo(20.0));
+        Assert.That(c.Perception.Environment.TempScorchingK, Is.EqualTo(360.0));
+        Assert.That(c.Needs.Bands["fatigue"], Is.EqualTo(new[] { 60.0, 80.0, 95.0 }));
+        Assert.That(c.Sleep.DayPhaseBounds, Is.EqualTo(new[] { 0.33, 0.75, 1.0 }));
+        Assert.That(c.Budget.BandBounds, Is.EqualTo(new[] { 0.3, 0.6 }));
+    }
+
+    [Test]
+    public void NeedBandsMustBeThreeIncreasingValues()
+    {
+        // RP-08
+        Assert.That(ErrorsOf(Mutate("fatigue = [60, 80, 95]", "fatigue = [60, 95, 80]")),
+            Has.Some.Contains("needs.bands.fatigue: values must be strictly increasing"));
+        Assert.That(ErrorsOf(Mutate("fatigue = [60, 80, 95]", "fatigue = [60, 80]")),
+            Has.Some.Contains("needs.bands.fatigue: must have exactly 3 values"));
+    }
+
+    [Test]
+    public void EveryNeedNeedsBands()
+    {
+        var errors = ErrorsOf(Mutate("oxygen = [60, 80, 95]\n", ""));
+
+        Assert.That(errors, Has.Some.Contains("needs.bands.oxygen: missing"));
+    }
+
+    [Test]
+    public void EnvironmentThresholdsMustBeOrdered()
+    {
+        // RP-06
+        var errors = ErrorsOf(Mutate("temp_hot_k = 323.15", "temp_hot_k = 200.0"));
+
+        Assert.That(errors, Has.Some.Contains("perception.environment.temp_hot_k"));
+    }
+
+    [Test]
+    public void BudgetBandBoundsAreFractions()
+    {
+        // RJ-09
+        var errors = ErrorsOf(Mutate("band_bounds = [0.3, 0.6]", "band_bounds = [0.3, 1.5]"));
+
+        Assert.That(errors, Has.Some.Contains("budget.band_bounds: values must be in (0, 1]"));
+    }
+
+    [Test]
     public void ProbabilityThresholdOutOfRangeIsRejected()
     {
         // RJ-18

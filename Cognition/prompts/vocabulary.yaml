@@ -1,0 +1,50 @@
+# Words shown to Jev and the LLMs for each category produced by Core/Perception/Categorizers.cs (P7).
+# Keys are the snake_case enum names; every enum value must have a word (checked at load).
+distance: # RP-05
+  within_reach: "within reach"
+  near: "near"
+  medium: "medium distance"
+  far: "far"
+direction: # RP-05, clockwise from north
+  north: "north"
+  north_east: "northeast"
+  east: "east"
+  south_east: "southeast"
+  south: "south"
+  south_west: "southwest"
+  west: "west"
+  north_west: "northwest"
+need_band: # RP-08
+  ok: "ok"
+  mild: "mild"
+  strong: "strong"
+  critical: "critical"
+day_phase: # RS-07, e.g. "your day 12, late"
+  early: "early"
+  middle: "midway"
+  late: "late"
+  overdue: "long past due for sleep"
+budget_band: # RJ-09
+  empty: "exhausted"
+  low: "low"
+  some: "some left"
+  plenty: "plenty"
+sensation: # RP-06
+  almost_no_air: "almost no air"
+  thin_air: "thin air"
+  heavy_air: "heavy, pressing air"
+  crushing_pressure: "crushing pressure"
+  freezing_cold: "freezing cold"
+  cold: "cold"
+  hot: "hot"
+  scorching_heat: "scorching heat"
+  fire: "fire"
+  puddle: "a puddle of {{reagent}}" # gas sensations use the 'gas' section instead
+gas: # sensed at or above perception.environment.gas_notice_kpa; unlisted gases (oxygen, nitrogen) are not sensed
+  plasma: "smell of plasma"
+  tritium: "sharp metallic smell"
+  carbon_dioxide: "stale, stuffy air"
+  nitrous_oxide: "sweet smell"
+  ammonia: "sharp ammonia smell"
+  water_vapor: "humid air"
+  frezon: "icy chemical smell"

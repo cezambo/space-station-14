@@ -5,6 +5,8 @@
 - `llm/*.md` — LLM templates with sections `## SYSTEM`, `## USER`, optional `## SCHEMA` (JSON Schema).
 - `llm/_*.md` — fragments, not templates: `_json_reply.md` is appended to the SYSTEM section of every
   template with a SCHEMA; `_json_repair.md` is the user message of the schema repair round.
+- `vocabulary.yaml` — the words for each category from `Core/Perception/Categorizers.cs` (distance, direction,
+  need bands, day phase, budget, sensations, gas smells). Every enum value needs a word; load fails otherwise.
 - Placeholders: `{{name}}`. A placeholder with no value at render time is an error (all missing names are
   reported). A value that no placeholder uses is a warning.
 - Substitution is single-pass: `{{…}}` inside a value is never expanded. Inside a `<tag>…</tag>` region of a

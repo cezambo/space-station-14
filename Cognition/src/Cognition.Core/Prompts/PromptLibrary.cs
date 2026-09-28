@@ -26,6 +26,8 @@ public sealed class PromptLibrary
         RepairHash = repairHash;
     }
 
+    public required Vocabulary Vocabulary { get; init; }
+
     public IReadOnlyCollection<string> JevNames => _jev.Keys;
     public IReadOnlyCollection<string> LlmNames => _llm.Keys;
 
@@ -82,9 +84,16 @@ public sealed class PromptLibrary
                 llm[name] = template;
         }
 
+        var vocabularyPath = Path.Combine(promptsDir, Vocabulary.FileName);
+        var vocabulary = File.Exists(vocabularyPath)
+            ? Vocabulary.Parse(File.ReadAllText(vocabularyPath), errors)
+            : null;
+        if (vocabulary is null && !File.Exists(vocabularyPath))
+            errors.Add($"missing {Vocabulary.FileName}");
+
         if (errors.Count > 0)
             throw new PromptLoadException(errors);
-        return new PromptLibrary(jev, llm, repair!, Placeholders.Hash(repair!));
+        return new PromptLibrary(jev, llm, repair!, Placeholders.Hash(repair!)) { Vocabulary = vocabulary! };
     }
 
     /// <summary>A fragment file without its comment lines; it must use exactly one placeholder, <paramref name="placeholder"/>.</summary>

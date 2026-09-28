@@ -43,6 +43,21 @@ Implemented with these defaults; each is easy to change. Please confirm or corre
   a `[llm_output_tokens]` table in `cognition.toml` when the first consumer lands (T1.23).
 - Status: open (non-blocking)
 
+## Q-4 — Categorizer boundaries not in the spec (2026-09-28, T1.10, RP-06, RP-08, RS-07, RJ-09)
+Implemented with these values in `cognition.toml`; all are config keys. Please confirm or correct.
+- (a) Need bands: only fatigue is specified (RS-02: 60/80/95). Hunger, thirst, body temperature and oxygen use
+  the same 60/80/95 on a 0-100 severity scale until the adapter (T1.14) shows the real SS14 ranges.
+- (b) Day phase (RS-07 shows only "late"): early < 0.33, middle < 0.75, late < 1.0, overdue ≥ 1.0 of T_wake.
+- (c) Budget band (RJ-09 says "band", no values): empty at 0, low < 30 %, some < 60 %, plenty ≥ 60 % of daily units.
+- (d) Environment: pressure uses SS14's hazard/warning constants (20 / 50 / 385 / 550 kPa); temperature uses
+  SS14 damage thresholds for the extremes (260 K / 360 K) and our own for "cold" (≤ 0 °C) and "hot" (≥ 50 °C).
+  A gas is sensed at ≥ 0.5 kPa partial pressure, and only gases listed in `prompts/vocabulary.yaml`
+  (oxygen and nitrogen are never sensed).
+- (e) Edges: every boundary belongs to the closer / milder band for distance (1.5 is "within reach"), and to
+  the more severe band for needs, phases and environment (60 fatigue is "mild"). A compass bearing exactly on
+  a sector edge goes clockwise (22.5° is northeast). Intensity labels are cut at midpoints of `intensity_map`.
+- Status: open (non-blocking)
+
 # Phase 0 questions
 
 - **Q-P0-01:** With `net.bindto = "127.0.0.1"` in `Cognition/config/server_local.toml`, `ss` still showed listen on `0.0.0.0:1212` / `[::]:1212` after Ready. Confirm whether Robust rewrites bind when IPv6 is present, or whether the TOML value needs the dual-stack form (`127.0.0.1,::1`). Hub advertising is already off.

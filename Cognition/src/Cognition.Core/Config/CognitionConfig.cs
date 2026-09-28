@@ -92,11 +92,28 @@ public sealed record PerceptionConfig(
     double HearingWhisper,
     double HearingNormal,
     double HearingShout,
-    double WallAttenuation);
+    double WallAttenuation,
+    EnvironmentConfig Environment);
+
+/// <summary>RP-06 sensation thresholds. Hazard values are SS14's (Atmospherics.cs, TemperatureDamageComponent).</summary>
+public sealed record EnvironmentConfig(
+    double PressureHazardLowKpa,
+    double PressureWarningLowKpa,
+    double PressureWarningHighKpa,
+    double PressureHazardHighKpa,
+    double TempFreezingK,
+    double TempColdK,
+    double TempHotK,
+    double TempScorchingK,
+    double GasNoticeKpa);
+
+/// <summary>RP-08: per need, the values (0-100 severity) where <c>mild</c>, <c>strong</c> and <c>critical</c> start.</summary>
+public sealed record NeedsConfig(IReadOnlyDictionary<string, IReadOnlyList<double>> Bands);
 
 public sealed record SpeechConfig(double MinIntervalS, double StaleAfterS, int MaxSentences);
 
-public sealed record BudgetConfig(int DailyUnits, int LightCost, int DeepCost);
+/// <summary><see cref="BandBounds"/>: remaining/daily fractions where <c>some</c> and <c>plenty</c> start (RJ-09).</summary>
+public sealed record BudgetConfig(int DailyUnits, int LightCost, int DeepCost, IReadOnlyList<double> BandBounds);
 
 public sealed record EmotionConfig(
     IReadOnlyList<string> Labels,
@@ -120,12 +137,14 @@ public sealed record OpinionConfig(
     int MaxRegenerations,
     string TemporalRegex);
 
+/// <summary><see cref="DayPhaseBounds"/>: t_awake/T_wake fractions where <c>middle</c>, <c>late</c>, <c>overdue</c> start (RS-07).</summary>
 public sealed record SleepConfig(
     double TWakeMinutes,
     double FullSleepMinutes,
     double MinConsolidatedSeconds,
     double MinFatigueForDayEnd,
-    double BedRecoveryMultiplier);
+    double BedRecoveryMultiplier,
+    IReadOnlyList<double> DayPhaseBounds);
 
 public sealed record MemoryConfig(
     int RecentHardCap,
@@ -153,6 +172,7 @@ public sealed record CognitionConfig(
     ThresholdsConfig Thresholds,
     ContextConfig Context,
     PerceptionConfig Perception,
+    NeedsConfig Needs,
     SpeechConfig Speech,
     BudgetConfig Budget,
     EmotionConfig Emotion,

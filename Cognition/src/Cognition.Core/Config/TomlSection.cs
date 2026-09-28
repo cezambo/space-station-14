@@ -179,6 +179,56 @@ internal sealed partial class TomlSection
         return list;
     }
 
+    public IReadOnlyList<double> DoubleList(string key)
+    {
+        if (!TryGet(key, out var raw))
+            return [];
+        return raw is TomlArray arr ? Numbers(arr, Full(key)) : TypeErrorList(key, raw);
+    }
+
+    /// <summary>Every key of the table must hold an array of numbers.</summary>
+    public IReadOnlyDictionary<string, IReadOnlyList<double>> DoubleListMap(string key)
+    {
+        var map = new Dictionary<string, IReadOnlyList<double>>(StringComparer.Ordinal);
+        foreach (var (k, v) in Entries(key))
+        {
+            if (v is TomlArray arr)
+                map[k] = Numbers(arr, $"{Full(key)}.{k}");
+            else
+                Errors.Add($"{Full(key)}.{k}: expected array of numbers");
+        }
+
+        return map;
+    }
+
+    private List<double> Numbers(TomlArray arr, string at)
+    {
+        var list = new List<double>();
+        foreach (var item in arr)
+        {
+            switch (item)
+            {
+                case double d:
+                    list.Add(d);
+                    break;
+                case long l:
+                    list.Add(l);
+                    break;
+                default:
+                    Errors.Add($"{at}: every element must be a number");
+                    break;
+            }
+        }
+
+        return list;
+    }
+
+    private IReadOnlyList<double> TypeErrorList(string key, object raw)
+    {
+        TypeError(key, "array of numbers", raw);
+        return [];
+    }
+
     /// <summary>Every key of the table must hold a number (integers are accepted).</summary>
     public IReadOnlyDictionary<string, double> DoubleMap(string key)
     {

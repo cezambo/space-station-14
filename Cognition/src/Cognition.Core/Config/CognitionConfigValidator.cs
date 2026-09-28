@@ -16,6 +16,8 @@ public static partial class CognitionConfigValidator
     /// <summary>OpenRouter chat completions <c>reasoning_effort</c> enum (docs/openai-compat-wire-format.md).</summary>
     private static readonly string[] ReasoningEfforts = ["none", "minimal", "low", "medium", "high", "xhigh", "max"];
 
+    private static readonly string[] RequiredNeeds = ["hunger", "thirst", "fatigue", "body_temperature", "oxygen"];
+
     private static readonly string[] Decays = ["linear", "exponential"];
     private static readonly string[] StubbornnessCaps = ["none", "2x", "3x"];
 
@@ -61,6 +63,27 @@ public static partial class CognitionConfigValidator
         StrictlyOrdered(e, ("perception.hearing_whisper", p2.HearingWhisper), ("perception.hearing_normal", p2.HearingNormal),
             ("perception.hearing_shout", p2.HearingShout));
         Probability("perception.wall_attenuation", p2.WallAttenuation, e);
+        var env = p2.Environment;
+        const string pe = "perception.environment";
+        Positive($"{pe}.pressure_hazard_low_kpa", env.PressureHazardLowKpa, e);
+        StrictlyOrdered(e, ($"{pe}.pressure_hazard_low_kpa", env.PressureHazardLowKpa),
+            ($"{pe}.pressure_warning_low_kpa", env.PressureWarningLowKpa),
+            ($"{pe}.pressure_warning_high_kpa", env.PressureWarningHighKpa),
+            ($"{pe}.pressure_hazard_high_kpa", env.PressureHazardHighKpa));
+        Positive($"{pe}.temp_freezing_k", env.TempFreezingK, e);
+        StrictlyOrdered(e, ($"{pe}.temp_freezing_k", env.TempFreezingK), ($"{pe}.temp_cold_k", env.TempColdK),
+            ($"{pe}.temp_hot_k", env.TempHotK), ($"{pe}.temp_scorching_k", env.TempScorchingK));
+        Positive($"{pe}.gas_notice_kpa", env.GasNoticeKpa, e);
+
+        foreach (var need in RequiredNeeds.Where(n => !c.Needs.Bands.ContainsKey(n)))
+        {
+            e.Add($"needs.bands.{need}: missing (RP-08)");
+        }
+
+        foreach (var (need, bounds) in c.Needs.Bands)
+        {
+            Bounds($"needs.bands.{need}", bounds, 3, 0, 100, e);
+        }
 
         Positive("speech.min_interval_s", c.Speech.MinIntervalS, e);
         Positive("speech.stale_after_s", c.Speech.StaleAfterS, e);
@@ -69,6 +92,7 @@ public static partial class CognitionConfigValidator
         Positive("budget.daily_units", c.Budget.DailyUnits, e);
         Positive("budget.light_cost", c.Budget.LightCost, e);
         StrictlyOrdered(e, ("budget.light_cost", c.Budget.LightCost), ("budget.deep_cost", c.Budget.DeepCost));
+        Bounds("budget.band_bounds", c.Budget.BandBounds, 2, 0, 1, e);
 
         ValidateEmotion(c.Emotion, e);
         ValidateOpinion(c.Opinion, e);
@@ -79,6 +103,7 @@ public static partial class CognitionConfigValidator
         Positive("sleep.min_consolidated_seconds", s.MinConsolidatedSeconds, e);
         NonNegative("sleep.min_fatigue_for_day_end", s.MinFatigueForDayEnd, e);
         Positive("sleep.bed_recovery_multiplier", s.BedRecoveryMultiplier, e);
+        Bounds("sleep.day_phase_bounds", s.DayPhaseBounds, 3, 0, double.MaxValue, e);
 
         var m = c.Memory;
         Positive("memory.recent_hard_cap", m.RecentHardCap, e);
@@ -190,6 +215,24 @@ public static partial class CognitionConfigValidator
         catch (ArgumentException ex)
         {
             e.Add($"opinion.temporal_regex: invalid regex ({ex.Message})");
+        }
+    }
+
+    /// <summary><paramref name="count"/> strictly increasing values in the open interval (min, max].</summary>
+    private static void Bounds(string key, IReadOnlyList<double> values, int count, double min, double max, List<string> e)
+    {
+        if (values.Count != count)
+        {
+            e.Add($"{key}: must have exactly {count} values");
+            return;
+        }
+
+        for (var i = 0; i < values.Count; i++)
+        {
+            if (values[i] <= min || values[i] > max)
+                e.Add($"{key}: values must be in ({min}, {max}]");
+            if (i > 0 && values[i] <= values[i - 1])
+                e.Add($"{key}: values must be strictly increasing");
         }
     }
 

@@ -24,6 +24,7 @@ public sealed class PromptLibraryTests
         Directory.CreateDirectory(Path.Combine(_tmp, "llm"));
         File.Copy(Path.Combine(PromptsDir, "llm", "_json_reply.md"), Path.Combine(_tmp, "llm", "_json_reply.md"));
         File.Copy(Path.Combine(PromptsDir, "llm", "_json_repair.md"), Path.Combine(_tmp, "llm", "_json_repair.md"));
+        File.Copy(Path.Combine(PromptsDir, Vocabulary.FileName), Path.Combine(_tmp, Vocabulary.FileName));
     }
 
     [TearDown]

@@ -103,6 +103,24 @@ hearing_normal = 10.0
 hearing_shout = 20.0
 wall_attenuation = 0.6
 
+[perception.environment] # RP-06. Hazard values from SS14; warning values: SS14 for pressure, ours for temperature (Q-4)
+pressure_hazard_low_kpa = 20.0 # Atmospherics.HazardLowPressure → "almost no air"
+pressure_warning_low_kpa = 50.0 # Atmospherics.WarningLowPressure → "thin air"
+pressure_warning_high_kpa = 385.0 # Atmospherics.WarningHighPressure → "heavy air"
+pressure_hazard_high_kpa = 550.0 # Atmospherics.HazardHighPressure → "crushing pressure"
+temp_freezing_k = 260.0 # TemperatureDamageComponent.ColdDamageThreshold → "freezing cold"
+temp_cold_k = 273.15 # 0 °C → "cold"
+temp_hot_k = 323.15 # 50 °C → "hot"
+temp_scorching_k = 360.0 # TemperatureDamageComponent.HeatDamageThreshold → "scorching heat"
+gas_notice_kpa = 0.5 # a listed gas at or above this partial pressure is sensed
+
+[needs.bands] # RP-08: severity 0-100 where mild, strong, critical start
+fatigue = [60, 80, 95] # RS-02
+hunger = [60, 80, 95] # not specified; same as fatigue for now (Q-4)
+thirst = [60, 80, 95]
+body_temperature = [60, 80, 95]
+oxygen = [60, 80, 95]
+
 [speech]
 min_interval_s = 6.0
 stale_after_s = 10.0
@@ -112,6 +130,7 @@ max_sentences = 2
 daily_units = 20
 light_cost = 1
 deep_cost = 6
+band_bounds = [0.3, 0.6] # remaining/daily where "some" and "plenty" start; below: "low"; 0: "empty" (Q-4)
 
 [emotion] # (E-05)
 labels = ["joy","trust","fear","surprise","sadness","disgust","anger","anticipation","neutral"]
@@ -153,6 +172,7 @@ full_sleep_minutes = 4
 min_consolidated_seconds = 90
 min_fatigue_for_day_end = 40
 bed_recovery_multiplier = 1.5
+day_phase_bounds = [0.33, 0.75, 1.0] # t_awake/T_wake where middle, late, overdue start; below: early (Q-4)
 
 [memory]
 recent_hard_cap = 400
