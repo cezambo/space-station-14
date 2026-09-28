@@ -28,7 +28,7 @@ planned at the end of the preceding phase (RDev-07).
 | D9 | World persists; implemented late if hard | §16 |
 | D10 | C# throughout | §3 |
 | D11 | Keep all SS14 systems | §1.3, §9.6 |
-| D12 | (2026-09-28, after T1.03b) Cost target is set for **8 characters**, not 15; mean decision cadence slightly lower (~0.4 Hz instead of 0.5) | §11 RC-04 |
+| D12 | (2026-09-28, after T1.03b) Cost target is set for **8 characters**, not 15; mean decision cadence slightly lower (~0.4 Hz instead of 0.5). RNF-04 session also 8 characters; Phase 6 scale steps unchanged | §11 RC-04, RNF-04 |
 
 ### 0.3 Changes in v1.2 (from Jev API review)
 | # | Change | IDs |
@@ -586,7 +586,7 @@ needs, fatigue) and cognitive DB, linked by `stableGuid`.
 | RNF-01 | Server tick with 20 characters | p99 ≤33 ms (30 TPS) |
 | RNF-02 | Cognitive overhead on main thread | ≤2 ms/tick |
 | RNF-03 | Extra RAM per character | ≤5 MB |
-| RNF-04 | Continuous session | ≥4 h with 15 characters |
+| RNF-04 | Continuous session | ≥4 h with 8 characters (D12; was 15) |
 | RNF-05 | API errors (timeout, 429, 5xx) | retry/backoff; no hangs or crashes |
 | RNF-06 | Observability | structured JSONL log per call (role, model, tokens, latency, cost, decision, confidence) + per-character inspector |
 | RNF-07 | Licensing | code MIT; most assets CC-BY-SA 3.0, some CC-BY-NC-SA — audit before any distribution |

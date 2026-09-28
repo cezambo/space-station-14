@@ -18,7 +18,7 @@ Format per entry:
 - Recommended default: A.
 - Status: answered (2026-09-28): cost target set for 8 characters instead of 15, and mean cadence slightly
   lower (~0.4 Hz). Full fan-out stays. Recorded as D12 / RC-04. Jev estimate ≈ $2.15–2.91/h.
-  Still to confirm: whether RNF-04 (4 h session with 15) and the Phase 6 scale steps (10→15→20) change too.
+  Follow-up (2026-09-28): RNF-04 session target is also 8 characters; Phase 6 scale steps (10→15→20) unchanged.
 
 ## Q-2 — Score level numbering for `memory_importance_new_opinion = 4` (2026-09-28, RJ-19, §14, T1.21, T1.24)
 - Context: the API numbers Score levels from 0 (`legend: {"0": …}`). `memory_filter.yaml` importance has
