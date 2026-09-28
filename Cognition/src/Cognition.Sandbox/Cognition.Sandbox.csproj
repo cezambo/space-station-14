@@ -4,4 +4,8 @@
     <ProjectReference Include="../Cognition.Core/Cognition.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Cognition.Scenario.Tests" />
+  </ItemGroup>
+
 </Project>

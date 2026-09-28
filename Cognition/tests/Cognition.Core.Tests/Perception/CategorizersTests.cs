@@ -150,43 +150,48 @@ public sealed class CategorizersTests
         Assert.That(Categorizers.Intensity(intensity, C.Emotion.IntensityMap), Is.EqualTo(expected));
     }
 
-    private static EnvironmentReading Air(double kpa = 101.3, double kelvin = 293.15, bool fire = false,
-        Dictionary<string, double>? gases = null, string[]? puddles = null) =>
-        new(kpa, kelvin, gases ?? new Dictionary<string, double>(), fire, puddles ?? []);
+    /// <summary><paramref name="gasKpa"/>: partial pressures, converted to the adapter's fractions.</summary>
+    private static RawEnvironment Air(float kpa = 101.3f, float kelvin = 293.15f, bool fire = false,
+        Dictionary<string, float>? gasKpa = null, string[]? puddles = null)
+    {
+        var fractions = (gasKpa ?? []).ToDictionary(g => g.Key, g => g.Value / kpa);
+        var hazards = (fire ? new[] { HazardKeys.Fire } : []).Concat((puddles ?? []).Select(HazardKeys.Puddle)).ToList();
+        return new RawEnvironment(kpa, kelvin, fractions, hazards);
+    }
 
-    private static SensationKind[] KindsOf(EnvironmentReading r) =>
+    private static SensationKind[] KindsOf(RawEnvironment r) =>
         Categorizers.Environment(r, C.Perception.Environment, Words.Value.NoticeableGases).Select(s => s.Kind).ToArray();
 
     // RP-06, SS14 pressure constants: hazard ≤ 20, warning ≤ 50, warning ≥ 385, hazard ≥ 550.
-    [TestCase(0.0, SensationKind.AlmostNoAir)]
-    [TestCase(20.0, SensationKind.AlmostNoAir)]
-    [TestCase(20.01, SensationKind.ThinAir)]
-    [TestCase(50.0, SensationKind.ThinAir)]
-    [TestCase(385.0, SensationKind.HeavyAir)]
-    [TestCase(549.99, SensationKind.HeavyAir)]
-    [TestCase(550.0, SensationKind.CrushingPressure)]
-    public void Pressure(double kpa, SensationKind expected)
+    [TestCase(0.0f, SensationKind.AlmostNoAir)]
+    [TestCase(20.0f, SensationKind.AlmostNoAir)]
+    [TestCase(20.01f, SensationKind.ThinAir)]
+    [TestCase(50.0f, SensationKind.ThinAir)]
+    [TestCase(385.0f, SensationKind.HeavyAir)]
+    [TestCase(549.99f, SensationKind.HeavyAir)]
+    [TestCase(550.0f, SensationKind.CrushingPressure)]
+    public void Pressure(float kpa, SensationKind expected)
     {
         Assert.That(KindsOf(Air(kpa: kpa)), Is.EqualTo(new[] { expected }));
     }
 
-    [TestCase(50.01)]
-    [TestCase(101.3)]
-    [TestCase(384.99)]
-    public void NormalAirIsNotSensed(double kpa)
+    [TestCase(50.01f)]
+    [TestCase(101.3f)]
+    [TestCase(384.99f)]
+    public void NormalAirIsNotSensed(float kpa)
     {
         Assert.That(KindsOf(Air(kpa: kpa)), Is.Empty);
     }
 
     // RP-06 temperature: ≤ 260 K freezing (SS14 cold damage), ≤ 273.15 cold, ≥ 323.15 hot, ≥ 360 scorching.
-    [TestCase(100.0, SensationKind.FreezingCold)]
-    [TestCase(260.0, SensationKind.FreezingCold)]
-    [TestCase(260.01, SensationKind.Cold)]
-    [TestCase(273.15, SensationKind.Cold)]
-    [TestCase(323.15, SensationKind.Hot)]
-    [TestCase(359.99, SensationKind.Hot)]
-    [TestCase(360.0, SensationKind.ScorchingHeat)]
-    public void Temperature(double kelvin, SensationKind expected)
+    [TestCase(100.0f, SensationKind.FreezingCold)]
+    [TestCase(260.0f, SensationKind.FreezingCold)]
+    [TestCase(260.01f, SensationKind.Cold)]
+    [TestCase(273.15f, SensationKind.Cold)]
+    [TestCase(323.15f, SensationKind.Hot)]
+    [TestCase(359.99f, SensationKind.Hot)]
+    [TestCase(360.0f, SensationKind.ScorchingHeat)]
+    public void Temperature(float kelvin, SensationKind expected)
     {
         Assert.That(KindsOf(Air(kelvin: kelvin)), Is.EqualTo(new[] { expected }));
     }
@@ -194,12 +199,12 @@ public sealed class CategorizersTests
     [Test]
     public void GasesAreSensedAboveNoticeLevelStrongestFirst()
     {
-        var r = Air(gases: new Dictionary<string, double>
+        var r = Air(gasKpa: new Dictionary<string, float>
         {
-            ["oxygen"] = 21.0,
-            ["plasma"] = 0.6,
-            ["tritium"] = 3.0,
-            ["frezon"] = 0.49,
+            ["oxygen"] = 21f,
+            ["plasma"] = 0.6f,
+            ["tritium"] = 3f,
+            ["frezon"] = 0.49f,
         });
 
         var sensed = Categorizers.Environment(r, C.Perception.Environment, Words.Value.NoticeableGases);
@@ -210,7 +215,7 @@ public sealed class CategorizersTests
     [Test]
     public void HazardsComeFirstThenFireGasesAndPuddles()
     {
-        var r = Air(kpa: 10, kelvin: 400, fire: true, gases: new Dictionary<string, double> { ["plasma"] = 5 },
+        var r = Air(kpa: 10, kelvin: 400, fire: true, gasKpa: new Dictionary<string, float> { ["plasma"] = 5 },
             puddles: ["blood", "blood", "water"]);
 
         var sensed = Categorizers.Environment(r, C.Perception.Environment, Words.Value.NoticeableGases);

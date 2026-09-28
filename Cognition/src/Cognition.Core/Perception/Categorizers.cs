@@ -73,14 +73,6 @@ public enum SensationKind
 /// <summary><see cref="Subject"/> is the gas id for <see cref="SensationKind.Gas"/> or the reagent for <see cref="SensationKind.Puddle"/>.</summary>
 public sealed record Sensation(SensationKind Kind, string? Subject = null);
 
-/// <summary>Raw atmosphere facts at the character's tile, as provided by an adapter (RA-06).</summary>
-public sealed record EnvironmentReading(
-    double PressureKpa,
-    double TemperatureK,
-    IReadOnlyDictionary<string, double> GasPartialKpa,
-    bool FireVisible,
-    IReadOnlyList<string> VisiblePuddles);
-
 /// <summary>
 /// Pure number → category functions (RP-05, RP-06, RP-08, RS-07, RJ-09, RE-04). Boundaries are inclusive on
 /// the lower band: exactly 1.5 tiles is <c>within reach</c>; exactly 60 fatigue is <c>mild</c>.
@@ -179,40 +171,47 @@ public static class Categorizers
     }
 
     /// <summary>
-    /// RP-06: hazards first (pressure, temperature, fire), then gases in <paramref name="noticeableGases"/> by
-    /// partial pressure (highest first), then puddles. At most one pressure and one temperature sensation.
+    /// RP-06, compared in <c>float</c> like the adapter's values so a threshold such as 323.15 K is exact:
+    /// hazards first (pressure, temperature, fire), then gases in <paramref name="noticeableGases"/> by
+    /// partial pressure (fraction × pressure, highest first), then puddles. At most one pressure and one
+    /// temperature sensation.
     /// </summary>
-    public static IReadOnlyList<Sensation> Environment(EnvironmentReading r, EnvironmentConfig c,
+    public static IReadOnlyList<Sensation> Environment(RawEnvironment r, EnvironmentConfig c,
         IReadOnlySet<string> noticeableGases)
     {
         var list = new List<Sensation>();
-        if (r.PressureKpa <= c.PressureHazardLowKpa)
+        var kpa = r.PressureKPa;
+        if (kpa <= (float)c.PressureHazardLowKpa)
             list.Add(new Sensation(SensationKind.AlmostNoAir));
-        else if (r.PressureKpa <= c.PressureWarningLowKpa)
+        else if (kpa <= (float)c.PressureWarningLowKpa)
             list.Add(new Sensation(SensationKind.ThinAir));
-        else if (r.PressureKpa >= c.PressureHazardHighKpa)
+        else if (kpa >= (float)c.PressureHazardHighKpa)
             list.Add(new Sensation(SensationKind.CrushingPressure));
-        else if (r.PressureKpa >= c.PressureWarningHighKpa)
+        else if (kpa >= (float)c.PressureWarningHighKpa)
             list.Add(new Sensation(SensationKind.HeavyAir));
 
-        if (r.TemperatureK <= c.TempFreezingK)
+        var kelvin = r.TemperatureK;
+        if (kelvin <= (float)c.TempFreezingK)
             list.Add(new Sensation(SensationKind.FreezingCold));
-        else if (r.TemperatureK <= c.TempColdK)
+        else if (kelvin <= (float)c.TempColdK)
             list.Add(new Sensation(SensationKind.Cold));
-        else if (r.TemperatureK >= c.TempScorchingK)
+        else if (kelvin >= (float)c.TempScorchingK)
             list.Add(new Sensation(SensationKind.ScorchingHeat));
-        else if (r.TemperatureK >= c.TempHotK)
+        else if (kelvin >= (float)c.TempHotK)
             list.Add(new Sensation(SensationKind.Hot));
 
-        if (r.FireVisible)
+        if (r.Hazards.Contains(HazardKeys.Fire))
             list.Add(new Sensation(SensationKind.Fire));
 
-        list.AddRange(r.GasPartialKpa
-            .Where(g => noticeableGases.Contains(g.Key) && g.Value >= c.GasNoticeKpa)
-            .OrderByDescending(g => g.Value).ThenBy(g => g.Key, StringComparer.Ordinal)
-            .Select(g => new Sensation(SensationKind.Gas, g.Key)));
+        list.AddRange(r.GasFractions
+            .Select(g => (Gas: g.Key, Kpa: g.Value * kpa))
+            .Where(g => noticeableGases.Contains(g.Gas) && g.Kpa >= (float)c.GasNoticeKpa)
+            .OrderByDescending(g => g.Kpa).ThenBy(g => g.Gas, StringComparer.Ordinal)
+            .Select(g => new Sensation(SensationKind.Gas, g.Gas)));
 
-        list.AddRange(r.VisiblePuddles.Distinct(StringComparer.Ordinal).Select(p => new Sensation(SensationKind.Puddle, p)));
+        list.AddRange(r.Hazards.Where(h => h.StartsWith(HazardKeys.PuddlePrefix, StringComparison.Ordinal))
+            .Select(h => h[HazardKeys.PuddlePrefix.Length..]).Distinct(StringComparer.Ordinal)
+            .Select(p => new Sensation(SensationKind.Puddle, p)));
         return list;
     }
 }

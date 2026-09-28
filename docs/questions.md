@@ -70,6 +70,24 @@ Implemented as below. Please confirm or correct.
 - (e) Characters start on personal day 1 with no acquaintances (RD-03: names are learned in play).
 - Status: open (non-blocking)
 
+## Q-6 — Sandbox world choices (2026-09-28, T1.11, RP-01/02, RS-01…06)
+Implemented as below; all numbers are `SandboxOptions` or `cognition.toml` values. Please confirm or correct.
+- (a) Vision defaults to 360° (SS14 is top-down with occlusion only); the cone is configurable (`FovAngleDeg`).
+  Range 16 tiles, reduced by fatigue per RS-02.
+- (b) Line of sight checks every cell the centre-to-centre segment crosses (stricter than plain Bresenham,
+  which can see through diagonal wall gaps). Two walls touching at a corner block sight, as in SS14.
+- (c) `full_sleep_minutes` (4) is sleep **in a bed**; on the floor it is slower by `bed_recovery_multiplier`
+  (6 min). Idle fatigue reaches 80 at T_wake; walking ×1.25; each damage point adds 1 % to the rate.
+- (d) Sleepers perceive nothing. A shout within its range wakes them, and so does a hit of ≥ 5 damage.
+- (e) An involuntary doze (critical fatigue) lasts 20 s; a collapse (fatigue 100) sleeps until rested. The world
+  reports raw facts (cause, fatigue at sleep start, seconds slept); Core decides whether the day ended (T1.22).
+- (f) Hunger 0→100 in 90 game minutes, thirst in 60; eating/drinking removes 40. No starvation damage yet.
+- (g) Contract additions to plan §2.2: `RawSound.AddresseeGuid` (for the "addressed" trigger, RJ-01) and
+  concrete shapes for `Affordance`, `ActionIntent`, `WorldEvent`, `GameClock`, which the plan only names.
+- (h) The mind is an immutable record (`Cognition.Core.Minds.Mind`) rather than the mutable `AgentMind` sketch, so
+  consolidation can work on a copy and commit with a version check (RS-09).
+- Status: open (non-blocking)
+
 # Phase 0 questions
 
 - **Q-P0-01:** With `net.bindto = "127.0.0.1"` in `Cognition/config/server_local.toml`, `ss` still showed listen on `0.0.0.0:1212` / `[::]:1212` after Ready. Confirm whether Robust rewrites bind when IPv6 is present, or whether the TOML value needs the dual-stack form (`127.0.0.1,::1`). Hub advertising is already off.
