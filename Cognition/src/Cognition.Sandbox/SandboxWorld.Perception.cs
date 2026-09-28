@@ -94,7 +94,7 @@ public sealed partial class SandboxWorld
             Door d => new RawPerceivedEntity(d.Ref, d.Name, false, null, pos, [d.State == DoorState.Open ? "open" : "closed"], [],
                 novel),
             Container c => new RawPerceivedEntity(c.Ref, c.Name, false, null, pos, [c.IsOpen ? "open" : "closed"], [], novel),
-            Item i => new RawPerceivedEntity(i.Ref, i.Name, false, null, pos, ItemTraits(i), [], novel),
+            Item i => new RawPerceivedEntity(i.Ref, i.Name, false, null, pos, ItemTraits(i), [], novel, IsItem: true),
             _ => new RawPerceivedEntity(e.Ref, e.Name, false, null, pos, [], [], novel),
         };
     }

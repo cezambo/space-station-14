@@ -75,6 +75,19 @@ public static partial class CognitionConfigValidator
             ($"{pe}.temp_hot_k", env.TempHotK), ($"{pe}.temp_scorching_k", env.TempScorchingK));
         Positive($"{pe}.gas_notice_kpa", env.GasNoticeKpa, e);
 
+        Bounds("perception.damage_bands", p2.DamageBands, 3, 0, double.MaxValue, e);
+        var sal = p2.Salience;
+        foreach (var (k, v) in new[] { ("proximity", sal.Proximity), ("novelty", sal.Novelty), ("goal", sal.Goal), ("danger", sal.Danger) })
+        {
+            if (v < 0 || double.IsNaN(v))
+                e.Add($"perception.salience.{k}: must be ≥ 0");
+        }
+
+        Probability("needs.oxygen_full_severity_drop", c.Needs.OxygenFullSeverityDrop, e);
+        Positive("needs.oxygen_full_severity_drop", c.Needs.OxygenFullSeverityDrop, e);
+        Positive("needs.body_temp_normal_k", c.Needs.BodyTempNormalK, e);
+        Positive("needs.body_temp_full_severity_k", c.Needs.BodyTempFullSeverityK, e);
+
         foreach (var need in RequiredNeeds.Where(n => !c.Needs.Bands.ContainsKey(n)))
         {
             e.Add($"needs.bands.{need}: missing (RP-08)");

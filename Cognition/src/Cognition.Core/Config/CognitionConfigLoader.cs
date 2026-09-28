@@ -149,8 +149,10 @@ public static class CognitionConfigLoader
                 HearingNormal: perception.Double("hearing_normal"),
                 HearingShout: perception.Double("hearing_shout"),
                 WallAttenuation: perception.Double("wall_attenuation"),
+                DamageBands: perception.DoubleList("damage_bands"),
+                Salience: ReadSalience(perception.Table("salience")),
                 Environment: ReadEnvironment(perception.Table("environment"))),
-            Needs: new NeedsConfig(root.Table("needs").DoubleListMap("bands")),
+            Needs: ReadNeeds(root.Table("needs")),
             Speech: new SpeechConfig(
                 MinIntervalS: speech.Double("min_interval_s"),
                 StaleAfterS: speech.Double("stale_after_s"),
@@ -199,6 +201,19 @@ public static class CognitionConfigLoader
             Persistence: new PersistenceConfig(root.Table("persistence").String("sqlite_path")),
             Telemetry: new TelemetryConfig(root.Table("telemetry").String("dir")));
     }
+
+    private static SalienceConfig ReadSalience(TomlSection s) => new(
+        Proximity: s.Double("proximity"),
+        Novelty: s.Double("novelty"),
+        Goal: s.Double("goal"),
+        Danger: s.Double("danger"),
+        DangerTraits: s.StringList("danger_traits"));
+
+    private static NeedsConfig ReadNeeds(TomlSection s) => new(
+        OxygenFullSeverityDrop: s.Double("oxygen_full_severity_drop"),
+        BodyTempNormalK: s.Double("body_temp_normal_k"),
+        BodyTempFullSeverityK: s.Double("body_temp_full_severity_k"),
+        Bands: s.DoubleListMap("bands"));
 
     private static EnvironmentConfig ReadEnvironment(TomlSection s)
     {

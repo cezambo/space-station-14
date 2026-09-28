@@ -20,16 +20,70 @@ public sealed class Vocabulary
         ("day_phase", typeof(DayPhase)),
         ("budget_band", typeof(BudgetBand)),
         ("sensation", typeof(SensationKind)),
+        ("damage_band", typeof(DamageBand)),
+        ("speech_verb", typeof(SpeechVolume)),
     ];
+
+    /// <summary>Need ids (RP-08) and the words shown for them.</summary>
+    public static readonly string[] Needs = ["hunger", "thirst", "fatigue", "body_temperature", "oxygen"];
+
+    /// <summary>Perception block phrases (T1.12) and the placeholders each must use.</summary>
+    public static readonly IReadOnlyDictionary<string, string[]> PhrasePlaceholders = new Dictionary<string, string[]>
+    {
+        ["seen_header"] = [],
+        ["heard_header"] = [],
+        ["environment_header"] = [],
+        ["body_header"] = [],
+        ["line"] = ["text"],
+        ["field_separator"] = [],
+        ["list_separator"] = [],
+        ["list_and"] = [],
+        ["nothing"] = [],
+        ["known"] = ["name"],
+        ["holding"] = ["items"],
+        ["looks"] = ["trait"],
+        ["here"] = [],
+        ["position"] = ["distance", "direction"],
+        ["heard_line"] = ["speaker", "position", "verb", "to_you", "text"],
+        ["to_you"] = [],
+        ["air_normal"] = [],
+        ["need"] = ["need", "band"],
+        ["damage"] = ["band", "type"],
+        ["pain"] = ["band"],
+        ["bleeding"] = [],
+    };
 
     private readonly Dictionary<string, Dictionary<string, string>> _words;
     private readonly Dictionary<string, string> _gases;
+    private readonly Dictionary<string, string> _needs;
+    private readonly Dictionary<string, string> _phrases;
 
-    private Vocabulary(Dictionary<string, Dictionary<string, string>> words, Dictionary<string, string> gases)
+    private Vocabulary(Dictionary<string, Dictionary<string, string>> words, Dictionary<string, string> gases,
+        Dictionary<string, string> needs, Dictionary<string, string> phrases, IReadOnlySet<string> stopwords)
     {
         _words = words;
         _gases = gases;
+        _needs = needs;
+        _phrases = phrases;
+        GoalStopwords = stopwords;
         NoticeableGases = new HashSet<string>(gases.Keys, StringComparer.Ordinal);
+    }
+
+    /// <summary>Words ignored when matching goal text against what is perceived.</summary>
+    public IReadOnlySet<string> GoalStopwords { get; }
+
+    public string NeedName(string need) => _needs[need];
+
+    /// <summary>A perception phrase with its placeholders filled (values are inserted literally).</summary>
+    public string Phrase(string key, params (string Name, string Value)[] values)
+    {
+        var text = _phrases[key];
+        foreach (var (name, value) in values)
+        {
+            text = text.Replace("{{" + name + "}}", value, StringComparison.Ordinal);
+        }
+
+        return text;
     }
 
     /// <summary>Gas ids that can be sensed; pass to <see cref="Categorizers.Environment"/>.</summary>
@@ -40,6 +94,8 @@ public sealed class Vocabulary
     public string Word(NeedBand v) => Lookup("need_band", v);
     public string Word(DayPhase v) => Lookup("day_phase", v);
     public string Word(BudgetBand v) => Lookup("budget_band", v);
+    public string Word(DamageBand v) => Lookup("damage_band", v);
+    public string Word(SpeechVolume v) => Lookup("speech_verb", v);
 
     public string Word(Sensation s) => s.Kind switch
     {
@@ -106,13 +162,45 @@ public sealed class Vocabulary
         }
 
         var gases = Section(root, "gas", errors);
-        var known = Sections.Select(s => s.Section).Append("gas").ToHashSet(StringComparer.Ordinal);
+        var needs = Section(root, "need", errors);
+        foreach (var n in Needs.Where(n => !needs.ContainsKey(n)))
+        {
+            errors.Add($"{FileName}: need.{n} is missing");
+        }
+
+        var phrases = Section(root, "perception", errors);
+        foreach (var (key, names) in PhrasePlaceholders)
+        {
+            if (!phrases.TryGetValue(key, out var phrase))
+            {
+                errors.Add($"{FileName}: perception.{key} is missing");
+                continue;
+            }
+
+            var used = Placeholders.NamesIn(phrase).Order(StringComparer.Ordinal);
+            if (!used.SequenceEqual(names.Order(StringComparer.Ordinal)))
+                errors.Add($"{FileName}: perception.{key} must use exactly {(names.Length == 0 ? "no placeholders" : string.Join(", ", names.Select(n => "{{" + n + "}}")))}");
+        }
+
+        foreach (var key in phrases.Keys.Where(k => !PhrasePlaceholders.ContainsKey(k)))
+        {
+            errors.Add($"{FileName}: perception.{key} is not a known phrase");
+        }
+
+        var stopwords = new HashSet<string>(StringComparer.Ordinal);
+        if (root.Children.TryGetValue(new YamlScalarNode("goal_stopwords"), out var sw) && sw is YamlSequenceNode seq)
+            stopwords.UnionWith(seq.Children.OfType<YamlScalarNode>().Select(n => (n.Value ?? string.Empty).ToLowerInvariant()));
+        else
+            errors.Add($"{FileName}: 'goal_stopwords' must be a list");
+
+        var known = Sections.Select(s => s.Section).Concat(["gas", "need", "perception", "goal_stopwords"])
+            .ToHashSet(StringComparer.Ordinal);
         foreach (var key in root.Children.Keys.Select(k => k.ToString()).Where(k => !known.Contains(k)))
         {
             errors.Add($"{FileName}: unknown section '{key}'");
         }
 
-        return new Vocabulary(words, gases);
+        return new Vocabulary(words, gases, needs, phrases, stopwords);
     }
 
     private static Dictionary<string, string> Section(YamlMappingNode root, string name, List<string> errors)

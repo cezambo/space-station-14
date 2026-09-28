@@ -93,7 +93,13 @@ public sealed record PerceptionConfig(
     double HearingNormal,
     double HearingShout,
     double WallAttenuation,
+    IReadOnlyList<double> DamageBands,
+    SalienceConfig Salience,
     EnvironmentConfig Environment);
+
+/// <summary>T1.12 salience = proximity/(1+d) + novelty + goal keyword match + danger, each weighted.</summary>
+public sealed record SalienceConfig(double Proximity, double Novelty, double Goal, double Danger,
+    IReadOnlyList<string> DangerTraits);
 
 /// <summary>RP-06 sensation thresholds. Hazard values are SS14's (Atmospherics.cs, TemperatureDamageComponent).</summary>
 public sealed record EnvironmentConfig(
@@ -108,7 +114,11 @@ public sealed record EnvironmentConfig(
     double GasNoticeKpa);
 
 /// <summary>RP-08: per need, the values (0-100 severity) where <c>mild</c>, <c>strong</c> and <c>critical</c> start.</summary>
-public sealed record NeedsConfig(IReadOnlyDictionary<string, IReadOnlyList<double>> Bands);
+public sealed record NeedsConfig(
+    double OxygenFullSeverityDrop,
+    double BodyTempNormalK,
+    double BodyTempFullSeverityK,
+    IReadOnlyDictionary<string, IReadOnlyList<double>> Bands);
 
 public sealed record SpeechConfig(double MinIntervalS, double StaleAfterS, int MaxSentences);
 

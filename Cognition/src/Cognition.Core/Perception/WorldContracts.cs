@@ -16,6 +16,7 @@ public enum SpeechVolume
 /// <summary>
 /// Something the agent sees (RP-01). Persons carry <see cref="StableGuid"/>; Core decides whether to show a
 /// name or <see cref="DisplayName"/> (a visible description) using the acquaintance registry (RD-03).
+/// <see cref="IsItem"/> marks things that can be carried; they have their own cap (RP-04).
 /// </summary>
 public sealed record RawPerceivedEntity(
     string EntityRef,
@@ -25,7 +26,8 @@ public sealed record RawPerceivedEntity(
     Vec2 Position,
     IReadOnlyList<string> VisibleTraits,
     IReadOnlyList<string> HeldItems,
-    bool IsNovel);
+    bool IsNovel,
+    bool IsItem = false);
 
 /// <summary>
 /// RP-02/RP-03. <see cref="Loudness"/> is the hearing range in tiles left after wall attenuation.

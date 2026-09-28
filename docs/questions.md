@@ -88,6 +88,20 @@ Implemented as below; all numbers are `SandboxOptions` or `cognition.toml` value
   consolidation can work on a copy and commit with a version check (RS-09).
 - Status: open (non-blocking)
 
+## Q-7 — Perception block choices (2026-09-28, T1.12, RP-03/04/07/08)
+Implemented as below; weights and bands are in `cognition.toml`, words in `prompts/vocabulary.yaml`.
+- (a) Salience = 1.0/(1 + distance) + 0.5 if new + 0.8 if a goal word matches the name or held items
+  + 1.0 if a trait is in `danger_traits` (bleeding, badly injured, unconscious, on fire). Goal words: ≥ 4 letters,
+  minus `goal_stopwords`. The 8-entity and 5-item caps apply after ranking.
+- (b) Sounds: the 5 most recent are kept (not ranked). Environment: at most 5 sensations, hazards first.
+- (c) BODY always shows hunger, thirst and fatigue; body temperature and breathing only when not `ok`.
+  Oxygen severity = (1 − saturation) / 0.5 × 100; body temperature severity = |T − 310.15 K| / 10 K × 100.
+- (d) Damage and pain bands: minor < 10 ≤ moderate < 30 ≤ serious < 60 ≤ severe. Damage type names are the
+  adapter's in lower case (RL-05: in-game names), e.g. "moderate blunt damage".
+- (e) Empty sections print "- nothing notable" rather than being dropped, so the layout is stable for Jev.
+- (f) Known people: "Bob (known)" in SEEN, plain "Bob" in HEARD, as in the plan example.
+- Status: open (non-blocking)
+
 # Phase 0 questions
 
 - **Q-P0-01:** With `net.bindto = "127.0.0.1"` in `Cognition/config/server_local.toml`, `ss` still showed listen on `0.0.0.0:1212` / `[::]:1212` after Ready. Confirm whether Robust rewrites bind when IPv6 is present, or whether the TOML value needs the dual-stack form (`127.0.0.1,::1`). Hub advertising is already off.

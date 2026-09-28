@@ -102,6 +102,14 @@ hearing_whisper = 2.0
 hearing_normal = 10.0
 hearing_shout = 20.0
 wall_attenuation = 0.6
+damage_bands = [10, 30, 60] # RP-07: damage/pain where moderate, serious, severe start; below: minor (Q-7)
+
+[perception.salience] # T1.12: weighted proximity + novelty + goal keyword match + danger
+proximity = 1.0 # × 1 / (1 + distance in tiles)
+novelty = 0.5
+goal = 0.8
+danger = 1.0
+danger_traits = ["bleeding", "badly injured", "unconscious", "on fire"]
 
 [perception.environment] # RP-06. Hazard values from SS14; warning values: SS14 for pressure, ours for temperature (Q-4)
 pressure_hazard_low_kpa = 20.0 # Atmospherics.HazardLowPressure → "almost no air"
@@ -113,6 +121,11 @@ temp_cold_k = 273.15 # 0 °C → "cold"
 temp_hot_k = 323.15 # 50 °C → "hot"
 temp_scorching_k = 360.0 # TemperatureDamageComponent.HeatDamageThreshold → "scorching heat"
 gas_notice_kpa = 0.5 # a listed gas at or above this partial pressure is sensed
+
+[needs] # RP-08 severities for needs the adapter reports as physical values (Q-7)
+oxygen_full_severity_drop = 0.5 # saturation drop (1 - SpO2) that counts as severity 100
+body_temp_normal_k = 310.15
+body_temp_full_severity_k = 10.0 # |T - normal| that counts as severity 100
 
 [needs.bands] # RP-08: severity 0-100 where mild, strong, critical start
 fatigue = [60, 80, 95] # RS-02

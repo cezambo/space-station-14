@@ -47,6 +47,14 @@ public enum BudgetBand
     Plenty,
 }
 
+public enum DamageBand
+{
+    Minor,
+    Moderate,
+    Serious,
+    Severe,
+}
+
 [Flags]
 public enum ThinkModes
 {
@@ -113,6 +121,26 @@ public static class Categorizers
             return NeedBand.Strong;
         return severity >= bounds[0] ? NeedBand.Mild : NeedBand.Ok;
     }
+
+    /// <summary>RP-07: <paramref name="bounds"/> are where moderate, serious and severe start. Null when there is none.</summary>
+    public static DamageBand? Damage(double amount, IReadOnlyList<double> bounds)
+    {
+        if (amount <= 0)
+            return null;
+        if (amount >= bounds[2])
+            return DamageBand.Severe;
+        if (amount >= bounds[1])
+            return DamageBand.Serious;
+        return amount >= bounds[0] ? DamageBand.Moderate : DamageBand.Minor;
+    }
+
+    /// <summary>RP-08: oxygen saturation (0-1) as a 0-100 severity.</summary>
+    public static double OxygenSeverity(double saturation, NeedsConfig needs) =>
+        Math.Clamp((1 - saturation) / needs.OxygenFullSeverityDrop * 100, 0, 100);
+
+    /// <summary>RP-08: distance from normal body temperature as a 0-100 severity.</summary>
+    public static double BodyTemperatureSeverity(double kelvin, NeedsConfig needs) =>
+        Math.Clamp(Math.Abs(kelvin - needs.BodyTempNormalK) / needs.BodyTempFullSeverityK * 100, 0, 100);
 
     public static NeedBand Need(string need, double severity, NeedsConfig needs) =>
         Need(severity, needs.Bands.TryGetValue(need, out var b) ? b : throw new KeyNotFoundException($"needs.bands.{need}"));

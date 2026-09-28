@@ -78,6 +78,25 @@ public sealed class VocabularyTests
         Assert.That(errors, Is.EqualTo(new[] { "vocabulary.yaml: distance.near must be a non-empty string" }));
     }
 
+    [Test]
+    public void PhraseMustUseItsPlaceholders()
+    {
+        var errors = ErrorsOf(RepoText.Replace("holding: \"holding {{items}}\"", "holding: \"holding {{item}}\"",
+            StringComparison.Ordinal));
+
+        Assert.That(errors, Is.EqualTo(new[] { "vocabulary.yaml: perception.holding must use exactly {{items}}" }));
+    }
+
+    [Test]
+    public void PhrasesFillPlaceholdersLiterally()
+    {
+        var v = Vocabulary.Load(PromptsDir);
+
+        Assert.That(v.Phrase("known", ("name", "{{x}} Bob")), Is.EqualTo("{{x}} Bob (known)"));
+        Assert.That(v.Word(SpeechVolume.Shout), Is.EqualTo("shouting"));
+        Assert.That(v.NeedName("oxygen"), Is.EqualTo("breathing"));
+    }
+
     [TestCase("WithinReach", "within_reach")]
     [TestCase("NorthEast", "north_east")]
     [TestCase("Ok", "ok")]
