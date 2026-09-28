@@ -174,6 +174,27 @@ expire at `d0 + τ`. At the halfway point the exponential value is `I0 / sqrt(e)
 - (e) Speech text is left for T1.18. The decision carries the purpose (`warn`, `ask`, …) and the listener.
 - Status: open (non-blocking)
 
+## Q-13 (T1.17) Urgency scale and the Jev rate window
+
+The requirements give the priority formula (RC-01) and the triggers (RJ-01) but no numeric urgency scale, and
+the plan says "token bucket". Recommended defaults, not new config keys:
+
+- (a) Urgency is the strongest pending trigger, in [0, 1]: damage and being addressed are 1.0; a failed
+  action or a blocked goal is 0.7; action completed, a new salient entity, a need-band change, and a
+  completed goal are 0.4. No trigger is 0. Several triggers do not add.
+- (b) The wait term is clamped at 1. A character who has never decided is treated as having waited the
+  whole interval, so that term is 1. Visible is 0 or 1. Equal priority grants the earlier character id;
+  the later one keeps the current action.
+- (c) The idle maximum (20 s) applies only while idle and with no trigger. A trigger on an idle character
+  is due after the minimum interval (1 s).
+- (d) The cap is a one-second sliding window of `floor(max_rps)` grants, not a bucket that can burst a
+  full capacity and then refill inside the same second. Any one-second window therefore holds at most 10
+  Jev grants. Light and heavy LLM windows are separate (5 and 2).
+- (e) The unit property stands in for SC-LOAD-20's `jev_rps_max` and urgent-before-calm checks. The YAML
+  scenario (fake latency, a 5% 429 rate, p95 urgent latency) still needs the decision loop and a driver.
+  Unhandled 429 stays the HTTP client's job.
+- Status: open (non-blocking)
+
 # Phase 0 questions
 
 - **Q-P0-01:** With `net.bindto = "127.0.0.1"` in `Cognition/config/server_local.toml`, `ss` still showed listen on `0.0.0.0:1212` / `[::]:1212` after Ready. Confirm whether Robust rewrites bind when IPv6 is present, or whether the TOML value needs the dual-stack form (`127.0.0.1,::1`). Hub advertising is already off.
