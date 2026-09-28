@@ -94,7 +94,21 @@ Pre-existing failures (if any) are recorded, not fixed (phase0 rule).
 
 Client GUI playtest: done on Xvfb + llvmpipe, see `phase0-playtest.md`.
 
+## Re-verification in new container (2026-09-28, UTC-3)
+
+Fresh clone on a Linux volume (outside `C:\`), commit `8364ca2f5f`.
+
+| Check | Result |
+|---|---|
+| `git submodule update --init --recursive` + `python3 RUN_THIS.py` | OK (RobustToolbox `fee0dd647`) |
+| `dotnet build SpaceStation14.slnx -c Release` | 0 errors, 694 warnings, 2m34s — matches baseline |
+| `Content.Tests` | 421 passed / 1 skipped / 0 failed — matches baseline |
+| Integration tests | not re-run in this container |
+| `TYPESAFE_API_KEY`, `OPENROUTER_API_KEY` | defined |
+| `gh auth status` | logged in as `cezambo` |
+| Remotes | `origin` URL cleaned (had an embedded token); `upstream` re-added. `master` is 5 ahead / 17 behind `upstream/master` (not merged) |
+
 ## Owner items left for Phase 0 exit
 
-1. API keys (`TYPESAFE_API_KEY`, `OPENROUTER_API_KEY`) as env vars + spend caps (needed for the Phase 1 billing gate).
+1. ~~API keys + spend caps~~ — keys set; spend caps not needed (prepaid credits, topped up manually).
 2. GATE approval to start Phase 1.

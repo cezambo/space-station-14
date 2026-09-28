@@ -6,8 +6,8 @@
 
 ## 0.1 Owner prerequisites [OWNER]
 - [x] Fork `space-wizards/space-station-14` on GitHub → `cezambo/space-station-14`.
-- [ ] Create API keys; set env vars `TYPESAFE_API_KEY`, `OPENROUTER_API_KEY` (never in files under git).
-- [ ] Set spending caps on TypeSafe and OpenRouter dashboards.
+- [x] Create API keys; set env vars `TYPESAFE_API_KEY`, `OPENROUTER_API_KEY` (never in files under git). *(verified present 2026-09-28)*
+- [x] Set spending caps on TypeSafe and OpenRouter dashboards. *(not needed: both accounts are prepaid credits, topped up manually by the owner; no overspend risk)*
 - [x] Install the .NET SDK version required by the repo (`global.json`) and Python 3. *(SDK 10.0.401 present; `global.json` asks 10.0.100 with rollForward)*
 
 ## 0.2 Repository setup
@@ -51,4 +51,4 @@ Verify every CVar name before using it; record in `docs/ss14-cvars.md`.
 - [x] Build green; baseline report started.
 - [x] Launcher scripts ready; local round play verified (walk / pickup / door).
 - [x] `docs/ss14-cvars.md`, `docs/ss14-recon.md`, `docs/licenses.md` exist.
-- [ ] **GATE:** owner approval before Phase 1.
+- [x] **GATE:** owner approval before Phase 1. *(approved by owner 2026-09-28)*
