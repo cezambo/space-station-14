@@ -233,6 +233,22 @@ the plan says "token bucket". Recommended defaults, not new config keys:
   is zero overspend, and a locked-door reply becoming one immediate goal with its success check.
 - Status: open (non-blocking)
 
+## Q-16 (T1.21) How recent memories are kept
+
+- (a) Identical events merge while each gap to the previous one in the run stays within
+  `memory.aggregate_window_s` (10 s). A repeat is told to Jev as a word: a couple of times (2–3), several
+  times (4–9), or many times (10 or more). The sentence never contains a count in digits.
+- (b) The Noul keeps the sentence when P(yes) is at or above `memory_keep`. Importance is the most probable
+  Score level, stored as 1–5. A tie takes the higher level. The weighted score is not used (RJ-19).
+- (c) Own speech and thoughts skip the filter and are stored at importance 5. Past `memory.recent_hard_cap`,
+  the lowest-importance other memory is dropped first. A speech or a thought is dropped only when nothing
+  else is left, oldest first.
+- (d) Filter calls stay inside the Jev window. When it is full, the next call waits until the following
+  second of the scheduler clock.
+- (e) The 30–150 memories per day and the 95% flagged-event checks are unit fixtures. The sandbox scenario
+  still needs the decision loop.
+- Status: open (non-blocking)
+
 # Phase 0 questions
 
 - **Q-P0-01:** With `net.bindto = "127.0.0.1"` in `Cognition/config/server_local.toml`, `ss` still showed listen on `0.0.0.0:1212` / `[::]:1212` after Ready. Confirm whether Robust rewrites bind when IPv6 is present, or whether the TOML value needs the dual-stack form (`127.0.0.1,::1`). Hub advertising is already off.

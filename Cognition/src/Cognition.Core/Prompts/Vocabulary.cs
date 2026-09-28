@@ -22,6 +22,7 @@ public sealed class Vocabulary
         ("sensation", typeof(SensationKind)),
         ("damage_band", typeof(DamageBand)),
         ("speech_verb", typeof(SpeechVolume)),
+        ("action", typeof(ActionVerb)),
     ];
 
     /// <summary>Need ids (RP-08) and the words shown for them.</summary>
@@ -94,17 +95,52 @@ public sealed class Vocabulary
         ["nearest"] = ["text"],
     };
 
+    /// <summary>Recent-memory sentences (T1.21, RMe-01). A count is a word, never a number sent to Jev.</summary>
+    public static readonly IReadOnlyDictionary<string, string[]> MemoryPlaceholders = new Dictionary<string, string[]>
+    {
+        ["did"] = ["verb", "what"],
+        ["did_again"] = ["verb", "what", "times"],
+        ["failed"] = ["verb", "what"],
+        ["failed_again"] = ["verb", "what", "times"],
+        ["failed_because"] = ["verb", "what", "reason"],
+        ["failed_because_again"] = ["verb", "what", "reason", "times"],
+        ["said"] = ["text"],
+        ["thought"] = ["text"],
+        ["hurt"] = [],
+        ["hurt_again"] = ["times"],
+        ["hurt_kind"] = ["kind"],
+        ["hurt_kind_again"] = ["kind", "times"],
+        ["fell_asleep"] = [],
+        ["fell_asleep_where"] = ["where"],
+        ["woke"] = [],
+        ["collapsed"] = [],
+        ["collapsed_again"] = ["times"],
+        ["unconscious"] = [],
+        ["unconscious_again"] = ["times"],
+        ["give_what"] = ["item", "target"],
+        ["put_what"] = ["item", "target"],
+        ["take_what"] = ["item", "target"],
+        ["lock_what"] = ["target", "item"],
+        ["use_what"] = ["item", "target"],
+        ["something"] = [],
+        ["times_couple"] = [],
+        ["times_several"] = [],
+        ["times_many"] = [],
+    };
+
     private readonly Dictionary<string, Dictionary<string, string>> _words;
     private readonly Dictionary<string, string> _gases;
     private readonly Dictionary<string, string> _needs;
     private readonly Dictionary<string, string> _phrases;
     private readonly Dictionary<string, string> _menu;
+    private readonly Dictionary<string, string> _memory;
 
     private Vocabulary(Dictionary<string, Dictionary<string, string>> words, Dictionary<string, string> gases,
         Dictionary<string, string> needs, Dictionary<string, string> phrases, Dictionary<string, string> menu,
-        IReadOnlySet<string> stopwords)
+        Dictionary<string, string> memory, IReadOnlySet<string> stopwords)
     {
         _menu = menu;
+        _memory = memory;
         _words = words;
         _gases = gases;
         _needs = needs;
@@ -123,6 +159,9 @@ public sealed class Vocabulary
 
     /// <summary>A menu option description with its placeholders filled (values are inserted literally).</summary>
     public string Menu(string key, params (string Name, string Value)[] values) => Fill(_menu[key], values);
+
+    /// <summary>A recent-memory sentence with its placeholders filled (values are inserted literally).</summary>
+    public string Memory(string key, params (string Name, string Value)[] values) => Fill(_memory[key], values);
 
     private static string Fill(string text, (string Name, string Value)[] values)
     {
@@ -144,6 +183,7 @@ public sealed class Vocabulary
     public string Word(BudgetBand v) => Lookup("budget_band", v);
     public string Word(DamageBand v) => Lookup("damage_band", v);
     public string Word(SpeechVolume v) => Lookup("speech_verb", v);
+    public string Word(ActionVerb v) => Lookup("action", v);
 
     public string Word(Sensation s) => s.Kind switch
     {
@@ -218,6 +258,7 @@ public sealed class Vocabulary
 
         var phrases = Phrases(root, "perception", PhrasePlaceholders, errors);
         var menu = Phrases(root, "menu", MenuPlaceholders, errors);
+        var memory = Phrases(root, "memory", MemoryPlaceholders, errors);
 
         var stopwords = new HashSet<string>(StringComparer.Ordinal);
         if (root.Children.TryGetValue(new YamlScalarNode("goal_stopwords"), out var sw) && sw is YamlSequenceNode seq)
@@ -225,14 +266,14 @@ public sealed class Vocabulary
         else
             errors.Add($"{FileName}: 'goal_stopwords' must be a list");
 
-        var known = Sections.Select(s => s.Section).Concat(["gas", "need", "perception", "menu", "goal_stopwords"])
+        var known = Sections.Select(s => s.Section).Concat(["gas", "need", "perception", "menu", "memory", "goal_stopwords"])
             .ToHashSet(StringComparer.Ordinal);
         foreach (var key in root.Children.Keys.Select(k => k.ToString()).Where(k => !known.Contains(k)))
         {
             errors.Add($"{FileName}: unknown section '{key}'");
         }
 
-        return new Vocabulary(words, gases, needs, phrases, menu, stopwords);
+        return new Vocabulary(words, gases, needs, phrases, menu, memory, stopwords);
     }
 
     private static Dictionary<string, string> Phrases(YamlMappingNode root, string section,

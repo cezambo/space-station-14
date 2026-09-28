@@ -13,9 +13,9 @@ Updated by the agent after each task. "Difficulty" guides which model should tak
 | T1.18 SpeechService | done | | 6 s gap, stale Noul, heard text stays quoted (Q-14); live p95 waits for the decision loop |
 | T1.19 DeepThinkingService | done | | light and deep share the template; budget never goes below zero (Q-15); SC-BLOCKED-GOAL waits for the loop |
 | T1.20 EmotionSystem | done | | linear formula as specified; exponential cutoff in Q-11 |
-| T1.21 Recent memory | next | medium | |
+| T1.21 Recent memory | done | | 10 s aggregation, Jev filter, cap drops others before speech (Q-16) |
 | T1.22 Consolidation pipeline | done | | kill/resume covered; steps [1]–[5] are placeholders (Q-10) |
-| T1.23 Daily summary | todo | low | |
+| T1.23 Daily summary | next | low | |
 | T1.24 OpinionSystem | todo | **high** | largest task (L) |
 | T1.25 Rupture | todo | medium | |
 | T1.26 Fortnightly | todo | **high** | (L) |
