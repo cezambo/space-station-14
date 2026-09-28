@@ -40,6 +40,7 @@ questions:
 
   move_target:
     type: choice
+    threshold_key: move_target_confidence
     include_when: "fanout == full || likely(move)"
     instructions: >
       Suppose this character decides to walk somewhere now. Which destination would they choose?
@@ -48,6 +49,7 @@ questions:
 
   move_direction:
     type: choice
+    threshold_key: move_direction_confidence
     include_when: "fanout == full || likely(move)"
     instructions: >
       Suppose this character walks in a direction instead of to a named destination. Which direction
@@ -56,6 +58,7 @@ questions:
 
   move_extent:
     type: choice
+    threshold_key: move_extent_confidence
     include_when: "fanout == full || likely(move)"
     instructions: >
       Suppose this character walks in a direction. How far should they go before reconsidering?
@@ -67,6 +70,7 @@ questions:
 
   interact_target:
     type: choice
+    threshold_key: interact_confidence
     include_when: "has_interactions && (fanout == full || likely(interact))"
     instructions: >
       Suppose this character interacts with something within reach. Which interaction would they perform?
@@ -74,6 +78,7 @@ questions:
 
   use_item:
     type: choice
+    threshold_key: use_item_confidence
     include_when: "has_item_uses && (fanout == full || likely(use_item))"
     instructions: >
       Suppose this character uses an item they are holding or carrying. Which use would they choose?
@@ -81,6 +86,7 @@ questions:
 
   inventory_action:
     type: choice
+    threshold_key: inventory_confidence
     include_when: "has_inventory_actions && (fanout == full || likely(inventory))"
     instructions: >
       Suppose this character rearranges their items. Which item action would they take?
@@ -88,6 +94,7 @@ questions:
 
   speak_target:
     type: choice
+    threshold_key: speak_target_confidence
     include_when: "has_listeners && (fanout == full || likely(speak))"
     instructions: >
       Suppose this character says something now. To whom would they speak?
@@ -95,6 +102,7 @@ questions:
 
   speak_intent:
     type: choice
+    threshold_key: speak_intent_confidence
     include_when: "has_listeners && (fanout == full || likely(speak))"
     instructions: >
       Suppose this character says something now. What would be the main purpose of what they say?
@@ -109,6 +117,7 @@ questions:
 
   think_mode:
     type: choice
+    threshold_key: think_mode_confidence
     include_when: "budget_allows_any && (fanout == full || likely(think))"
     instructions: >
       Suppose this character stops to think carefully. How deeply would they think?
@@ -116,6 +125,7 @@ questions:
 
   sleep_where:
     type: choice
+    threshold_key: sleep_confidence
     include_when: "fatigue_band >= mild"
     instructions: >
       Suppose this character goes to sleep now. Where would they sleep?
@@ -131,6 +141,7 @@ questions:
 
   emotion:
     type: choice
+    threshold_key: emotion_confidence
     include_when: "decisions_since_emotion_check == emotion_every_n - 1"
     instructions: >
       Which emotion is this character most likely feeling right now, given everything above?

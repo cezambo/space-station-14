@@ -75,6 +75,18 @@ w_visible = 0.3
 
 [thresholds] # RJ-18, per question (E-04)
 action_confidence = 0.35
+# Sub-menu keys are separate (RJ-18). The numbers start at the action_category default until E-04 calibrates them.
+move_target_confidence = 0.35
+move_direction_confidence = 0.35
+move_extent_confidence = 0.35
+interact_confidence = 0.35
+use_item_confidence = 0.35
+inventory_confidence = 0.35
+speak_target_confidence = 0.35
+speak_intent_confidence = 0.35
+think_mode_confidence = 0.35
+sleep_confidence = 0.35
+emotion_confidence = 0.35
 memory_keep = 0.55
 memory_importance_new_opinion = 4 # Score level, ordinal (RJ-19)
 goal_relevance = 0.60

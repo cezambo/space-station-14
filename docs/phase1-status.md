@@ -8,8 +8,8 @@ Updated by the agent after each task. "Difficulty" guides which model should tak
 | T1.13 Scenario DSL | done | | 5 scripted scenarios in CI, 3 agent scenarios waiting for T1.16 |
 | T1.14 ContextAssembler | done | | p99 measured with T1.16; choices in Q-8 |
 | T1.15 DecisionCallBuilder | done | | property test over 50 layouts: 0 invalid options; choices in Q-9 |
-| T1.16 DecisionInterpreter | next | medium | per-question thresholds; closes the loop for agent scenarios |
-| T1.17 Scheduler | todo | medium | |
+| T1.16 DecisionInterpreter | done | | category gates the submenu; low confidence keeps the current action (Q-12) |
+| T1.17 Scheduler | next | medium | |
 | T1.18 SpeechService | todo | medium | |
 | T1.19 DeepThinkingService | todo | medium | |
 | T1.20 EmotionSystem | done | | linear formula as specified; exponential cutoff in Q-11 |

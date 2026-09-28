@@ -161,6 +161,19 @@ exponential is `I0 · exp(-(d − d0) / τ)` while `d < d0 + τ`, and 0 from the
 expire at `d0 + τ`. At the halfway point the exponential value is `I0 / sqrt(e)`.
 - Status: open (non-blocking)
 
+## Q-12 (T1.16) How an answer becomes an action
+
+- (a) Each Choice question has its own threshold key (RJ-18). Until E-04 calibrates them, every decision
+  Choice starts at 0.35, the default the requirements give for `action_category`. The keys are not shared.
+- (b) Confidence below the threshold of the category, or of the one sub-menu that builds the action, keeps the
+  current action and is reported as `low_confidence` (RJ-06). Other sub-menus are not read (RJ-17).
+- (c) `goal_blocked` is true when P(yes) is at or above its own threshold. It does not cancel the action.
+  A low-confidence `emotion` answer is dropped and also does not cancel the action.
+- (d) `none_of_these` on destinations uses direction and extent. A known bed that is not the current tile
+  becomes a walk to that bed; sleeping itself is only the "here" option.
+- (e) Speech text is left for T1.18. The decision carries the purpose (`warn`, `ask`, …) and the listener.
+- Status: open (non-blocking)
+
 # Phase 0 questions
 
 - **Q-P0-01:** With `net.bindto = "127.0.0.1"` in `Cognition/config/server_local.toml`, `ss` still showed listen on `0.0.0.0:1212` / `[::]:1212` after Ready. Confirm whether Robust rewrites bind when IPv6 is present, or whether the TOML value needs the dual-stack form (`127.0.0.1,::1`). Hub advertising is already off.
