@@ -332,3 +332,6 @@ docs/reports/**/raw/
 # Live test progress (written by scripts/run-integration-shards.sh)
 TESTES-PROGRESSO.md
 TESTES-PROGRESSO.tmp
+Cognition/**/bin/
+Cognition/**/obj/
+Cognition/logs/

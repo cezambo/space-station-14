@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Cognition.Core/Cognition.Core.csproj" />
+    <ProjectReference Include="../Cognition.Sandbox/Cognition.Sandbox.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit.Analyzers" />
+    <PackageReference Include="NUnit3TestAdapter" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/Cognition.Core/Cognition.Core.csproj" />
+    <ProjectReference Include="../../src/Cognition.Sandbox/Cognition.Sandbox.csproj" />
+  </ItemGroup>
+
+</Project>

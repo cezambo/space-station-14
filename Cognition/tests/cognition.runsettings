@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tests never touch the network: AI calls run in replay-strict (RDev-04, AGENTS.md rule 8). -->
+<RunSettings>
+  <RunConfiguration>
+    <EnvironmentVariables>
+      <COGNITION_REPLAY_MODE>replay-strict</COGNITION_REPLAY_MODE>
+    </EnvironmentVariables>
+  </RunConfiguration>
+</RunSettings>

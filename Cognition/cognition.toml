@@ -1,0 +1,151 @@
+# All numeric defaults marked (E-xx) are calibrated by experiments (requirements §18).
+
+[providers.jev]
+base_url = "https://api.typesafe.ai/v1"
+model = "jev-1.13.0" # pinned; never replaced by an LLM (P3, RM-02)
+api_key_env = "TYPESAFE_API_KEY"
+timeout_ms = 2000
+max_retries = 3
+max_rps = 10 # ≤50% of 1200/min (RC-01)
+backoff_initial_ms = 500 # doubled per attempt; defaults of the official SDK RetryPolicy
+backoff_max_ms = 5000
+backoff_jitter = 0.25 # fraction randomly subtracted from each delay
+# The response carries token counts only; USD is computed from these (docs.typesafe.ai/models).
+input_price_usd_per_mtok = 0.042
+output_price_usd_per_mtok = 0.0
+
+[providers.llm.light]
+base_url = "https://openrouter.ai/api/v1"
+model = "z-ai/glm-5.3-flash"
+reasoning_effort = "low"
+api_key_env = "OPENROUTER_API_KEY"
+timeout_ms = 20000
+max_rps = 5
+
+[providers.llm.heavy]
+base_url = "https://openrouter.ai/api/v1"
+model = "z-ai/glm-5.3"
+reasoning_effort = "max"
+api_key_env = "OPENROUTER_API_KEY"
+timeout_ms = 120000
+max_rps = 2
+
+[replay]
+mode = "replay" # live | record | replay | replay-strict (CI)
+dir = "fixtures/replay"
+
+[live_guard]
+max_cost_usd_per_run = 2.00 # RDev-04
+
+[decision] # (E-03)
+min_interval_s = 1.0
+max_interval_s = 8.0
+idle_max_interval_s = 20.0
+emotion_every_n = 5
+fanout = "full" # full | reduced — set by T1.03b gate
+
+[scheduler]
+w_urgency = 1.0
+w_wait = 0.5
+w_visible = 0.3
+
+[thresholds] # RJ-18, per question (E-04)
+action_confidence = 0.35
+memory_keep = 0.55
+memory_importance_new_opinion = 4 # Score level, ordinal (RJ-19)
+goal_relevance = 0.60
+goal_blocked = 0.60
+goal_valid = 0.50
+goal_done = 0.70
+temporal_fail = 0.40 # fail if P(yes) >= this
+emotion_op_valid = 0.60
+modifier_dedupe_confidence = 0.50
+personality_change = 0.70
+speech_stale_ok = 0.50
+
+[context]
+target_tokens = 4000
+hard_cap_tokens = 32000
+chars_per_token_initial = 4.0
+
+[perception] # RP-04, RP-05
+max_entities = 8
+max_items = 5
+max_env = 5
+max_sounds = 5
+band_within_reach = 1.5
+band_near = 5.0
+band_medium = 12.0
+hearing_whisper = 2.0
+hearing_normal = 10.0
+hearing_shout = 20.0
+wall_attenuation = 0.6
+
+[speech]
+min_interval_s = 6.0
+stale_after_s = 10.0
+max_sentences = 2
+
+[budget] # (E-06)
+daily_units = 20
+light_cost = 1
+deep_cost = 6
+
+[emotion] # (E-05)
+labels = ["joy","trust","fear","surprise","sadness","disgust","anger","anticipation","neutral"]
+beta = 2.0
+alpha = 0.6
+decay = "linear" # linear | exponential
+secondary_min_p = 0.25
+max_modifiers = 6
+max_duration_days = 60
+
+[emotion.intensity_map]
+faint = 0.15
+mild = 0.30
+moderate = 0.50
+strong = 0.70
+overwhelming = 0.90
+
+[emotion.duration_map_days]
+"days" = 3
+"about a week" = 7
+"a few weeks" = 21
+"about a month" = 30
+"about two months" = 60
+
+[opinion] # (E-01)
+stubbornness_default = 5
+stubbornness_by_tag = { stubborn = 8, fickle = 3 }
+stubbornness_cap = "none" # none | 2x | 3x
+buffer_decay_days = 0 # 0 = off
+synergy_increment = [1, 2] # [agrees, strongly_agrees]
+stubbornness_decay_days = 0
+max_in_context = 3
+max_regenerations = 2
+temporal_regex = "\\b(yesterday|today|tonight|tomorrow|recently|lately|last (night|week|month)|this (morning|afternoon|evening|week)|ago|earlier|on day \\d+|the other day)\\b"
+
+[sleep] # (E-02)
+t_wake_minutes = 40
+full_sleep_minutes = 4
+min_consolidated_seconds = 90
+min_fatigue_for_day_end = 40
+bed_recovery_multiplier = 1.5
+
+[memory]
+recent_hard_cap = 400
+aggregate_window_s = 10
+daily_buffer_min = 5
+daily_compact_at = 20
+daily_compact_count = 15
+daily_words_min = 120
+daily_words_max = 300
+
+[consolidation]
+step_max_retries = 2
+
+[persistence]
+sqlite_path = "data/minds.sqlite"
+
+[telemetry]
+dir = "logs"
