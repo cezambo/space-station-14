@@ -3,6 +3,8 @@
   <ItemGroup>
     <PackageReference Include="Tomlyn" />
     <PackageReference Include="YamlDotNet" />
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" />
   </ItemGroup>
 
   <ItemGroup>
