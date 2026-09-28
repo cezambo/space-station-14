@@ -2,6 +2,7 @@
   "name": "Ambiente Seguro Cursor",
   "image": "mcr.microsoft.com/devcontainers/universal:linux",
   "remoteUser": "codespace",
+  "shutdownAction": "none",
   "mounts": [
     "source=ss14jev-user-config,target=/home/codespace/.config,type=volume"
   ],
