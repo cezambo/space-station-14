@@ -36,7 +36,9 @@ public sealed record PerceptionBlock(
     IReadOnlyList<HeardLine> Heard,
     IReadOnlyList<Sensation> Environment,
     IReadOnlyList<NeedLine> Needs,
-    int DroppedSeen);
+    int DroppedSeen,
+    string EnvironmentText,
+    string BodyText);
 
 /// <summary>
 /// Turns <see cref="RawPerception"/> into the categorical text block (RP-03…08, RD-03). Only what the adapter
@@ -93,15 +95,41 @@ public sealed partial class PerceptionFormatter
         var env = Categorizers.Environment(p.Env, cfg.Environment, _v.NoticeableGases).Take(cfg.MaxEnv).ToList();
         var needs = NeedsOf(p.Body);
 
+        var envText = env.Count == 0 ? _v.Phrase("air_normal") : string.Join(_v.Phrase("list_separator"), env.Select(_v.Word));
+        var bodyText = BodyText(p.Body, needs);
+        return new PerceptionBlock(Render(seen, heard, envText, bodyText), seen, heard, env, needs,
+            p.Seen.Count - seen.Count, envText, bodyText);
+    }
+
+    /// <summary>
+    /// Drops the <paramref name="count"/> least salient seen lines (RJ-08 trim step); ties drop the later line.
+    /// Heard, environment and body are never trimmed.
+    /// </summary>
+    public PerceptionBlock DropLeastSalient(PerceptionBlock block, int count)
+    {
+        if (count <= 0)
+            return block;
+        var drop = block.Seen.Select((l, i) => (l, i)).OrderBy(x => x.l.Salience).ThenByDescending(x => x.i)
+            .Take(count).Select(x => x.i).ToHashSet();
+        var seen = block.Seen.Where((_, i) => !drop.Contains(i)).ToList();
+        return block with
+        {
+            Text = Render(seen, block.Heard, block.EnvironmentText, block.BodyText),
+            Seen = seen,
+            DroppedSeen = block.DroppedSeen + drop.Count,
+        };
+    }
+
+    private string Render(IEnumerable<PerceivedLine> seen, IEnumerable<HeardLine> heard, string envText, string bodyText)
+    {
         var sb = new StringBuilder();
         sb.Append(_v.Phrase("seen_header")).Append('\n');
         AppendLines(sb, seen.Select(l => l.Text));
         sb.Append(_v.Phrase("heard_header")).Append('\n');
         AppendLines(sb, heard.Select(h => h.Text));
-        var envText = env.Count == 0 ? _v.Phrase("air_normal") : string.Join(_v.Phrase("list_separator"), env.Select(_v.Word));
         sb.Append(_v.Phrase("environment_header")).Append(' ').Append(envText).Append('\n');
-        sb.Append(_v.Phrase("body_header")).Append(' ').Append(BodyText(p.Body, needs));
-        return new PerceptionBlock(sb.ToString(), seen, heard, env, needs, p.Seen.Count - seen.Count);
+        sb.Append(_v.Phrase("body_header")).Append(' ').Append(bodyText);
+        return sb.ToString();
     }
 
     private void AppendLines(StringBuilder sb, IEnumerable<string> lines)

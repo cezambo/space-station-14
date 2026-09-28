@@ -89,6 +89,20 @@ speech_stale_ok = 0.50
 target_tokens = 4000
 hard_cap_tokens = 32000
 chars_per_token_initial = 4.0
+calibration_rate = 0.1 # T1.14: step of the per-block chars/token fit to billed input tokens (NLMS, 0 < rate <= 1)
+
+[context.block_targets] # §9.3 target tokens per block; exceeding one is logged, never trimmed by itself
+instructions = 500
+general = 100
+goals = 250
+personality = 250
+emotion = 120
+current_action = 200
+perception = 900
+recent_memory = 900
+daily_memory = 350
+opinions = 150
+menus = 400
 
 [perception] # RP-04, RP-05
 max_entities = 8

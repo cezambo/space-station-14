@@ -136,7 +136,9 @@ public static class CognitionConfigLoader
             Context: new ContextConfig(
                 TargetTokens: context.Int("target_tokens"),
                 HardCapTokens: context.Int("hard_cap_tokens"),
-                CharsPerTokenInitial: context.Double("chars_per_token_initial")),
+                CharsPerTokenInitial: context.Double("chars_per_token_initial"),
+                CalibrationRate: context.Double("calibration_rate"),
+                BlockTargets: context.IntMap("block_targets")),
             Perception: new PerceptionConfig(
                 MaxEntities: perception.Int("max_entities"),
                 MaxItems: perception.Int("max_items"),

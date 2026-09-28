@@ -102,6 +102,23 @@ Implemented as below; weights and bands are in `cognition.toml`, words in `promp
 - (f) Known people: "Bob (known)" in SEEN, plain "Bob" in HEARD, as in the plan example.
 - Status: open (non-blocking)
 
+## Q-8 (T1.14) Context assembler choices
+
+- (a) Trimming starts only when the whole context exceeds `context.target_tokens` (4000) and stops as soon as it
+  fits. Per-block targets (§9.3) are logged as `over_block_target`, never trimmed on their own.
+  Alternative: trim each block to its own target first.
+- (b) Items are removed one at a time in RJ-08 order: the whole daily summary, then recent memories oldest first,
+  then opinions from least relevant (the caller orders them), then the least salient SEEN line. Heard sounds,
+  environment and body stay.
+- (c) After all trims, a context above the target is sent and flagged `over_target`; above the hard cap (32k) it
+  throws `ContextOverflowException` (the decision is skipped).
+- (d) "Recalibrated per block type from real usage": providers bill only the whole call, so per-block ratios are
+  fitted with normalized least mean squares (step `context.calibration_rate` = 0.1), bounded to 1–8 chars/token.
+  A unit test shows it recovers 4 different per-block ratios within 5 % from totals alone.
+- (e) The §9.5 acceptance (context mean ≤4.1k, p99 ≤8k tokens in all scenarios) is measured once the decision
+  loop runs agent scenarios (T1.16).
+- Status: open (non-blocking)
+
 # Phase 0 questions
 
 - **Q-P0-01:** With `net.bindto = "127.0.0.1"` in `Cognition/config/server_local.toml`, `ss` still showed listen on `0.0.0.0:1212` / `[::]:1212` after Ready. Confirm whether Robust rewrites bind when IPv6 is present, or whether the TOML value needs the dual-stack form (`127.0.0.1,::1`). Hub advertising is already off.

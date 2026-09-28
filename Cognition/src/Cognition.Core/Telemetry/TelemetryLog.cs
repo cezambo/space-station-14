@@ -53,10 +53,19 @@ public sealed record CallRecord(
 public sealed record DecisionRecord(double T, string? Character, string Purpose, string Decision, double Confidence,
     string? Detail);
 
+/// <summary>Size of one assembled decision context (RJ-08): estimated tokens per block and what was trimmed.</summary>
+public sealed record ContextRecord(double T, string? Character, string Purpose, int EstimatedTokens, bool OverTarget,
+    IReadOnlyList<(string Block, int Tokens)> Blocks, IReadOnlyList<(string Block, int Removed)> Trims,
+    IReadOnlyList<string> OverBlockTarget);
+
 public interface ITelemetrySink
 {
     void Write(CallRecord record);
     void Write(DecisionRecord record);
+
+    void Write(ContextRecord record)
+    {
+    }
 }
 
 /// <summary>
@@ -102,6 +111,37 @@ public static class TelemetryJson
         w.WriteString("decision", r.Decision);
         w.WriteNumber("confidence", Math.Round(r.Confidence, 4));
         WriteNullable(w, "detail", r.Detail);
+    });
+
+    public static string Line(ContextRecord r) => Write(w =>
+    {
+        w.WriteNumber("t", Math.Round(r.T, 3));
+        w.WriteString("kind", "context");
+        WriteNullable(w, "character", r.Character);
+        w.WriteString("purpose", r.Purpose);
+        w.WriteNumber("estimated_tokens", r.EstimatedTokens);
+        w.WriteBoolean("over_target", r.OverTarget);
+        w.WriteStartObject("blocks");
+        foreach (var (block, tokens) in r.Blocks)
+        {
+            w.WriteNumber(block, tokens);
+        }
+
+        w.WriteEndObject();
+        w.WriteStartObject("trims");
+        foreach (var (block, removed) in r.Trims)
+        {
+            w.WriteNumber(block, removed);
+        }
+
+        w.WriteEndObject();
+        w.WriteStartArray("over_block_target");
+        foreach (var block in r.OverBlockTarget)
+        {
+            w.WriteStringValue(block);
+        }
+
+        w.WriteEndArray();
     });
 
     /// <summary>Compact per-question summary: choice + confidence, score level + confidence, or P(yes).</summary>
@@ -175,6 +215,8 @@ public sealed class JsonlTelemetrySink : ITelemetrySink, IDisposable
 
     public void Write(DecisionRecord record) => WriteLine(TelemetryJson.Line(record));
 
+    public void Write(ContextRecord record) => WriteLine(TelemetryJson.Line(record));
+
     private void WriteLine(string line)
     {
         lock (_lock)
@@ -204,6 +246,14 @@ public sealed class CompositeTelemetrySink(params ITelemetrySink[] sinks) : ITel
     }
 
     public void Write(DecisionRecord record)
+    {
+        foreach (var s in sinks)
+        {
+            s.Write(record);
+        }
+    }
+
+    public void Write(ContextRecord record)
     {
         foreach (var s in sinks)
         {

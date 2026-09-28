@@ -39,6 +39,7 @@ public sealed class Vocabulary
         ["list_separator"] = [],
         ["list_and"] = [],
         ["nothing"] = [],
+        ["none"] = [],
         ["known"] = ["name"],
         ["holding"] = ["items"],
         ["looks"] = ["trait"],

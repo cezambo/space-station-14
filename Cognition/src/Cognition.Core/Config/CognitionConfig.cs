@@ -79,7 +79,12 @@ public sealed record ThresholdsConfig(
     IReadOnlyDictionary<string, double> Probabilities,
     IReadOnlyDictionary<string, int> ScoreLevels);
 
-public sealed record ContextConfig(int TargetTokens, int HardCapTokens, double CharsPerTokenInitial);
+public sealed record ContextConfig(
+    int TargetTokens,
+    int HardCapTokens,
+    double CharsPerTokenInitial,
+    double CalibrationRate,
+    IReadOnlyDictionary<string, int> BlockTargets);
 
 public sealed record PerceptionConfig(
     int MaxEntities,

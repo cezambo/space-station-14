@@ -73,6 +73,7 @@ perception: # T1.12 block layout; placeholders are fixed per phrase (checked at 
   list_separator: "; "
   list_and: " and "
   nothing: "nothing notable"
+  none: "none"
   known: "{{name}} (known)"
   holding: "holding {{items}}"
   looks: "looks {{trait}}"

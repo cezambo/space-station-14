@@ -50,6 +50,20 @@ public static partial class CognitionConfigValidator
         Positive("context.target_tokens", c.Context.TargetTokens, e);
         Ordered(e, ("context.target_tokens", c.Context.TargetTokens), ("context.hard_cap_tokens", c.Context.HardCapTokens));
         Positive("context.chars_per_token_initial", c.Context.CharsPerTokenInitial, e);
+        if (c.Context.CalibrationRate is <= 0 or > 1)
+            e.Add($"context.calibration_rate: {c.Context.CalibrationRate} must be in (0, 1]");
+        var blocks = Enum.GetNames<Decision.ContextBlock>().Select(Decision.ContextBlocks.Key).ToList();
+        foreach (var missing in blocks.Where(b => !c.Context.BlockTargets.ContainsKey(b)))
+        {
+            e.Add($"context.block_targets.{missing}: required");
+        }
+
+        foreach (var (key, value) in c.Context.BlockTargets.OrderBy(kv => kv.Key, StringComparer.Ordinal))
+        {
+            if (!blocks.Contains(key))
+                e.Add($"context.block_targets.{key}: unknown block (known: {string.Join(", ", blocks)})");
+            Positive($"context.block_targets.{key}", value, e);
+        }
 
         var p2 = c.Perception;
         Positive("perception.max_entities", p2.MaxEntities, e);

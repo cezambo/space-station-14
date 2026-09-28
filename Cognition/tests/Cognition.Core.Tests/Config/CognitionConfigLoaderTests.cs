@@ -267,6 +267,18 @@ public sealed class CognitionConfigLoaderTests
     }
 
     [Test]
+    public void ContextBlockTargetsCoverEveryBlockExactly()
+    {
+        // §9.3, T1.14
+        Assert.That(Parse(RepoToml).Context.BlockTargets["perception"], Is.EqualTo(900));
+        Assert.That(ErrorsOf(Mutate("daily_memory = 350\n", "")), Has.Some.Contains("context.block_targets.daily_memory: required"));
+        Assert.That(ErrorsOf(Mutate("daily_memory = 350\n", "daily_memory = 350\nweather = 10\n")),
+            Has.Some.Contains("context.block_targets.weather: unknown block"));
+        Assert.That(ErrorsOf(Mutate("calibration_rate = 0.1", "calibration_rate = 1.5")),
+            Has.Some.Contains("context.calibration_rate"));
+    }
+
+    [Test]
     public void EveryNeedNeedsBands()
     {
         var errors = ErrorsOf(Mutate("oxygen = [60, 80, 95]\n", ""));
