@@ -214,6 +214,25 @@ the plan says "token bucket". Recommended defaults, not new config keys:
   line.
 - Status: open (non-blocking)
 
+## Q-15 (T1.19) What a thought costs
+
+- (a) Light and deep share `deep_think.md`. The cost is `budget.light_cost` or `budget.deep_cost`. A call is
+  made only when the remaining units cover that cost.
+- (b) Units are deducted only when the reply is the schema's JSON, the thought is non-empty, and every
+  immediate goal has text and a success check. Invalid JSON, a schema rejection, a full rate window, and an
+  unaffordable mode cost 0. The balance after a thought is the balance before minus the cost, so it stays
+  at or above zero when the balance before was.
+- (c) The service does not keep its own balance. The next call must be given the balance the previous one
+  returned.
+- (d) New immediate goals are numbered `i1`, `i2`, …, skipping ids already used by other horizons. The
+  thought is a recent memory of source `thought` with importance 5, until T1.21's filter keeps own thoughts
+  itself.
+- (e) The call asks for 600 output tokens. That is room for the thought and three goals, not a calibrated
+  threshold, so it is not a new config key.
+- (f) SC-BLOCKED-GOAL (re-plan within 60 s in the sandbox) waits for the decision loop. The unit property
+  is zero overspend, and a locked-door reply becoming one immediate goal with its success check.
+- Status: open (non-blocking)
+
 # Phase 0 questions
 
 - **Q-P0-01:** With `net.bindto = "127.0.0.1"` in `Cognition/config/server_local.toml`, `ss` still showed listen on `0.0.0.0:1212` / `[::]:1212` after Ready. Confirm whether Robust rewrites bind when IPv6 is present, or whether the TOML value needs the dual-stack form (`127.0.0.1,::1`). Hub advertising is already off.
