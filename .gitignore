@@ -328,3 +328,7 @@ Cognition/data/
 docs/reports/**/raw/
 .env
 .env.*
+
+# Live test progress (written by scripts/run-integration-shards.sh)
+TESTES-PROGRESSO.md
+TESTES-PROGRESSO.tmp

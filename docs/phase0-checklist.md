@@ -20,7 +20,7 @@
 ## 0.3 Build & baseline
 - [x] `dotnet build -c Release` succeeds. *(via `SpaceStation14.slnx`)*
 - [x] Run `Content.Tests` (421 passed / 1 skipped / 0 failed).
-- [~] Run `Content.IntegrationTests` (still running in background; partial skips observed).
+- [x] Run `Content.IntegrationTests`: 3,164 passed / 5 skipped / 0 failed, in shards (`scripts/run-integration-shards.sh`; upstream 20-min pool limit).
 - [x] Write `docs/reports/phase0-baseline.md`.
 
 ## 0.4 Local play configuration
@@ -28,7 +28,7 @@ Verify every CVar name before using it; record in `docs/ss14-cvars.md`.
 - [x] Authentication disabled for local play. (`auth.mode = 2`)
 - [x] Lobby disabled / round auto-start.
 - [x] Default game preset without antagonists (`Sandbox`).
-- [~] Server bound to localhost only. (`net.bindto = 127.0.0.1` set; observed listen on `0.0.0.0:1212` — see questions.md)
+- [x] Server bound to localhost only (`net.bindto` + `status.bind = 127.0.0.1:1212`; verified with `ss`, Q-P0-01 resolved).
 - [x] Dedicated config: `Cognition/config/server_local.toml`
 
 ## 0.5 Launcher (RA-04)

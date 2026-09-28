@@ -44,17 +44,25 @@ dotnet test Content.Tests/Content.Tests.csproj -c Release --no-build
 
 ## Integration tests (`Content.IntegrationTests`)
 
-```text
-dotnet test Content.IntegrationTests -c Release --no-build
-→ Failed!  Failed: 1315, Passed: 1825, Skipped: 1, Total: 3141, Duration: 20m56s
-→ Test Run Aborted.
-```
+**Result: 0 failures.** Run in shards with `scripts/run-integration-shards.sh` (game stopped, 2026-09-27):
 
-**Likely environmental, not a code regression.** The first failure is a tick desync in the test pool
-(`TestPair.SyncTicks: Expected 1, But was -25233`). Then every later test fails in SetUp with
-`Pool manager has not been initialized` (cascade). The run overlapped with a manual server smoke test
-and heavy CPU/RAM load (~59% RAM on testhost). **Rerun alone** on an idle machine before treating
-these as pre-existing failures.
+| Shard | Filter | Passed | Skipped | Failed | Wall time |
+|---|---|---:|---:|---:|---:|
+| entitytest | `Tests.EntityTest.` | 5 | 0 | 0 | 5m13s |
+| gamerules | `Tests.GameRules.` | 118 | 0 | 0 | 12m59s |
+| rest-ag | namespaces A–G (minus the two above) | 1,927 | 1 | 0 | 3m05s |
+| rest-hz | namespaces H–Z | 1,114 | 4 | 0 | 12m11s |
+| **Total** | | **3,164** | **5** | **0** | ~33 min |
+
+**Why shards:** `Content.IntegrationTests/PoolManagerTestEventHandler.cs` shuts the test pool down after
+**20 minutes** total (`MaximumTotalTestingTimeLimit`). A single full run takes longer on this machine,
+so every test that hadn't started yet fails at once with `Pool manager has not been initialized`.
+The earlier "1315 / 1376 failures" were exactly that cascade: all tests that finished before the cutoff
+had passed. Each shard stays under 20 min. Test code was not changed.
+
+**Watching progress:** the runner writes `TESTES-PROGRESSO.md` (repo root, gitignored) every 5 s
+(state, per-shard progress bar, ETA, last test, failures). `scripts/test-dashboard.py --once` prints the same in a terminal.
+Raw logs/TRX: `docs/reports/raw/integration-shards/` (gitignored).
 
 Pre-existing failures (if any) are recorded, not fixed (phase0 rule).
 
@@ -63,7 +71,7 @@ Pre-existing failures (if any) are recorded, not fixed (phase0 rule).
 | Remote | URL | Notes |
 |--------|-----|--------|
 | `upstream` | `https://github.com/space-wizards/space-station-14.git` | Official; never auto-merge |
-| `origin` | *(missing)* | Create GitHub fork + `gh auth login`, then `git remote add origin <fork-url>` |
+| `origin` | `https://github.com/cezambo/space-station-14.git` | Owner fork |
 
 ## Local play artifacts
 
@@ -84,11 +92,9 @@ Pre-existing failures (if any) are recorded, not fixed (phase0 rule).
 → "Server Version 290.0.0.0 -> Ready"
 ```
 
-Client GUI playtest still needs a display (WSLg / desktop).
+Client GUI playtest: done on Xvfb + llvmpipe, see `phase0-playtest.md`.
 
-## Owner blockers for full Phase 0 exit
+## Owner items left for Phase 0 exit
 
-1. Authenticate GitHub (`gh auth login`) and create a personal fork; set `origin`.
-2. Manual client playtest with a display (WSLg / local GPU host).
-3. Finish IntegrationTests run and paste counts below.
-4. Optional: API keys + spend caps (needed for Phase 1 billing gate, not for build).
+1. API keys (`TYPESAFE_API_KEY`, `OPENROUTER_API_KEY`) as env vars + spend caps (needed for the Phase 1 billing gate).
+2. GATE approval to start Phase 1.

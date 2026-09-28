@@ -17,7 +17,8 @@ max_connections = 8
 
 [status]
 enabled = true
-# Status bind follows net.port when unset
+# HttpListener prefix; unset defaults to "*:<net.port>", i.e. all interfaces.
+bind = "127.0.0.1:1212"
 
 [hub]
 advertise = false
