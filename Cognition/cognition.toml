@@ -42,7 +42,7 @@ min_interval_s = 1.0
 max_interval_s = 8.0
 idle_max_interval_s = 20.0
 emotion_every_n = 5
-fanout = "full" # full | reduced — set by T1.03b gate
+fanout = "full" # full | reduced — T1.03b: billed per call, so full (docs/reports/T1.03b-billing.md)
 
 [scheduler]
 w_urgency = 1.0
