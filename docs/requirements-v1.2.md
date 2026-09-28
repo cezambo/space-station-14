@@ -28,6 +28,7 @@ planned at the end of the preceding phase (RDev-07).
 | D9 | World persists; implemented late if hard | §16 |
 | D10 | C# throughout | §3 |
 | D11 | Keep all SS14 systems | §1.3, §9.6 |
+| D12 | (2026-09-28, after T1.03b) Cost target is set for **8 characters**, not 15; mean decision cadence slightly lower (~0.4 Hz instead of 0.5) | §11 RC-04 |
 
 ### 0.3 Changes in v1.2 (from Jev API review)
 | # | Change | IDs |
@@ -384,7 +385,8 @@ Sleeping and `player`-mode characters make no decision calls.
 - **RC-02** Under saturation, lowest-priority characters keep current action or fall back to SS14 HTN.
 Jev is never replaced by an LLM.
 - **RC-03** Offline: deterministic HTN behavior; speech via local LLM if configured.
-- **RC-04** Target: **≤ US$ 6/h with 15 characters**, measured via RM-06.
+- **RC-04** Target: **≤ US$ 6/h with 8 characters** (D12; was 15), measured via RM-06. Mean decision cadence
+target ~0.4 Hz per character (was 0.5), tuned in E-03.
 - **RC-05 Billing gate:** before finalizing fan-out, measure whether parallel questions are billed per call or
 per question (same ~3k-token state with 1, 5, 10 questions). If per question: switch to reduced heuristic
 fan-out (`action_category` + 2–3 likely sub-menus; others in a second call on demand) and revise §11 for
@@ -394,6 +396,11 @@ owner approval.
 $$15 \times 0.5 \times 3800 \times 3600 \approx 103\text{M tokens/h} \Rightarrow \approx \$4.3/\text{h}$$
 Sleep reduces this ~10%. Speech ≈ $0.4–0.9/h. Consolidations: cents per personal day per character.
 Prices as of 2026-09-25 (early access).
+
+*Revised after T1.03b (billing confirmed per call; the 13 decision questions add ~2,020 tokens per call,
+see `docs/reports/T1.03b-billing.md`), with D12 (8 characters, 0.4 Hz):*
+$$8 \times 0.4 \times 4438 \times 3600 \approx 51\text{M tokens/h} \Rightarrow \approx \$2.15/\text{h}$$
+With a 4k-token state (~6,020 tokens/decision): ≈ $2.91/h. At 0.5 Hz: $2.68/h and $3.64/h.
 
 ---
 

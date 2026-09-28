@@ -155,7 +155,7 @@ Size: S ≤1 agent-day · M 2–3 · L ≥4. **GATE** = stop and report. **[OWNE
 | T1.28 | **[OWNER]** Labeling CLI + datasets | T1.24 | RDev-02 | M |
 | T1.29 | Jev judge + LLM judge + calibration report (Spearman ≥0.6) | T1.27, T1.28 | RDev-02/03 | M |
 | T1.30 | Experiment runners E-01, E-05 + reports | T1.24, T1.20, T1.27 | §18 | M |
-| T1.31 | Cost measurement: real cost per agent-hour, projection to 15 agents | T1.17…T1.26 | RC-04 | S |
+| T1.31 | Cost measurement: real cost per agent-hour, projection to 8 agents (D12) | T1.17…T1.26 | RC-04 | S |
 
 ### Sprint order
 ```
@@ -276,7 +276,7 @@ classification; real rewrite only for the winner. E-05 sweep β∈{1,2,3}, α∈
 Reports in `docs/reports/E-01.md`, `E-05.md` → owner approval.
 
 **T1.31 Cost.** Live 30-minute run, 5 agents, standard scenario mix; USD per agent-hour by role; projection
-for 15 agents vs RC-04.
+for 8 agents vs RC-04 (D12).
 
 ## 5. Phase 1 exit criteria (GATE)
 | # | Criterion |
@@ -285,7 +285,7 @@ for 15 agents vs RC-04.
 | S-2 | 30 accelerated days, 5 agents, no crash, no corrupted state |
 | S-3 | CI green in replay-strict, zero cost |
 | S-4 | E-01 and E-05 approved by owner |
-| S-5 | Projected cost for 15 agents ≤ US$ 6/h, or revised §11 approved |
+| S-5 | Projected cost for 8 agents ≤ US$ 6/h (D12), or revised §11 approved |
 | S-6 | `docs/phase2-plan.md` written (RDev-07) |
 
 ## 6. Phase-specific risks
