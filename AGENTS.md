@@ -43,3 +43,5 @@ acceptance criteria) and wait for approval before executing it (RDev-07).
 with options and a recommended default, then continue on unrelated tasks.
 - Never guess external API formats: verify against official docs and record findings in `docs/` (e.g.
 `docs/jev-wire-format.md`).
+- When designing Jev questions, follow `.cursor/skills/typesafe-ai/SKILL.md` (official TypeSafe skill, MIT,
+from `typesafe-ai/skills`). The rules above win where they are stricter.
