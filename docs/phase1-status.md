@@ -12,7 +12,7 @@ Updated by the agent after each task. "Difficulty" guides which model should tak
 | T1.17 Scheduler | todo | medium | |
 | T1.18 SpeechService | todo | medium | |
 | T1.19 DeepThinkingService | todo | medium | |
-| T1.20 EmotionSystem | todo | **high** | exact RE-03 formulas, property tests |
+| T1.20 EmotionSystem | done | | linear formula as specified; exponential cutoff in Q-11 |
 | T1.21 Recent memory | todo | medium | |
 | T1.22 Consolidation pipeline | done | | kill/resume covered; steps [1]–[5] are placeholders (Q-10) |
 | T1.23 Daily summary | todo | low | |

@@ -154,6 +154,13 @@ Implemented as below; weights and bands are in `cognition.toml`, words in `promp
 - (e) Schema version 2 adds a `checkpoints` table. A version-1 database is migrated on open.
 - Status: open (non-blocking)
 
+## Q-11 (T1.20) Exponential emotion decay
+
+The requirements give the linear formula and say exponential decay is optional, without a formula. Implemented
+exponential is `I0 · exp(-(d − d0) / τ)` while `d < d0 + τ`, and 0 from the expiry onward, so both curves
+expire at `d0 + τ`. At the halfway point the exponential value is `I0 / sqrt(e)`.
+- Status: open (non-blocking)
+
 # Phase 0 questions
 
 - **Q-P0-01:** With `net.bindto = "127.0.0.1"` in `Cognition/config/server_local.toml`, `ss` still showed listen on `0.0.0.0:1212` / `[::]:1212` after Ready. Confirm whether Robust rewrites bind when IPv6 is present, or whether the TOML value needs the dual-stack form (`127.0.0.1,::1`). Hub advertising is already off.
