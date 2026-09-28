@@ -195,6 +195,25 @@ the plan says "token bucket". Recommended defaults, not new config keys:
   Unhandled 429 stays the HTTP client's job.
 - Status: open (non-blocking)
 
+## Q-14 (T1.18) When a line is actually said
+
+- (a) The 6 s gap and the light-LLM window share the caller's clock. The stale check uses wall time
+  (`TimeProvider`), because RJ-12 is about the reply arriving late, not about game time.
+- (b) A reply is stale only when that wall time is strictly greater than `speech.stale_after_s`. At exactly
+  10 s the line is said and Jev is not asked.
+- (c) The Noul speaks the line when P(yes) is at or above `speech_stale_ok`. Below that, a missing answer,
+  or no room in the Jev window, drops the line. Only a spoken line starts the 6 s gap. A dropped, blank, or
+  deferred attempt can be tried again immediately.
+- (d) One wrapping pair of quotes is removed, and the line is cut to `speech.max_sentences`. That string is
+  what would be displayed and heard (RL-02). Double quotes inside the line become apostrophes only in the
+  copy sent to the stale Noul, so they cannot close the quoted region in `speech_stale.yaml`.
+- (e) The light call asks for 80 output tokens. That is room for two short sentences, not a calibrated
+  threshold, so it is not a new config key.
+- (f) Live p95 ≤ 3 s and the YAML SC-ADVERSARIAL-SPEECH need the decision loop. The unit test covers the
+  property that scenario exists for: heard text stays inside `<heard>`, and the spoken line is the model's
+  line.
+- Status: open (non-blocking)
+
 # Phase 0 questions
 
 - **Q-P0-01:** With `net.bindto = "127.0.0.1"` in `Cognition/config/server_local.toml`, `ss` still showed listen on `0.0.0.0:1212` / `[::]:1212` after Ready. Confirm whether Robust rewrites bind when IPv6 is present, or whether the TOML value needs the dual-stack form (`127.0.0.1,::1`). Hub advertising is already off.

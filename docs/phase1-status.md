@@ -10,8 +10,8 @@ Updated by the agent after each task. "Difficulty" guides which model should tak
 | T1.15 DecisionCallBuilder | done | | property test over 50 layouts: 0 invalid options; choices in Q-9 |
 | T1.16 DecisionInterpreter | done | | category gates the submenu; low confidence keeps the current action (Q-12) |
 | T1.17 Scheduler | done | | sliding window, 20 agents grant 10/s, damage first (Q-13); full SC-LOAD-20 YAML waits for a driver |
-| T1.18 SpeechService | next | medium | |
-| T1.19 DeepThinkingService | todo | medium | |
+| T1.18 SpeechService | done | | 6 s gap, stale Noul, heard text stays quoted (Q-14); live p95 waits for the decision loop |
+| T1.19 DeepThinkingService | next | medium | |
 | T1.20 EmotionSystem | done | | linear formula as specified; exponential cutoff in Q-11 |
 | T1.21 Recent memory | todo | medium | |
 | T1.22 Consolidation pipeline | done | | kill/resume covered; steps [1]–[5] are placeholders (Q-10) |
