@@ -1,0 +1,68 @@
+{
+  "id": "npc_07",
+  "stableGuid": "5eed0000-0000-4000-8000-000000000007",
+  "ss14Profile": {
+    "name": "Greta Lindqvist",
+    "species": "Human",
+    "age": 45,
+    "job": "Captain",
+    "flavorText": "A composed woman in a pressed uniform who speaks slowly and rarely raises her voice."
+  },
+  "personality": {
+    "traits": {
+      "openness": 0.5,
+      "conscientiousness": 0.9,
+      "extraversion": 0.6,
+      "agreeableness": 0.5,
+      "neuroticism": 0.3
+    },
+    "tags": [
+      "decisive",
+      "proud"
+    ],
+    "likes": [
+      {
+        "text": "a well-run station",
+        "strength": "strong"
+      },
+      {
+        "text": "loyal crew",
+        "strength": "strong"
+      }
+    ],
+    "dislikes": [
+      {
+        "text": "disorder",
+        "strength": "strong"
+      },
+      {
+        "text": "excuses",
+        "strength": "moderate"
+      }
+    ]
+  },
+  "goals": {
+    "medium": [
+      {
+        "id": "m1",
+        "text": "Check that every department is staffed",
+        "priority": "high",
+        "successCheck": null
+      },
+      {
+        "id": "m2",
+        "text": "Keep the station safe from hazards",
+        "priority": "high",
+        "successCheck": null
+      }
+    ],
+    "long": [
+      {
+        "id": "l1",
+        "text": "Finish her tour without losing a single crew member",
+        "priority": "high",
+        "successCheck": null
+      }
+    ]
+  }
+}

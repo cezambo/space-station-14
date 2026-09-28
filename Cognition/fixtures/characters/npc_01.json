@@ -1,0 +1,69 @@
+{
+  "id": "npc_01",
+  "stableGuid": "5eed0000-0000-4000-8000-000000000001",
+  "ss14Profile": {
+    "name": "Ana Souza",
+    "species": "Human",
+    "age": 34,
+    "job": "Chef",
+    "flavorText": "A broad-shouldered cook who keeps a knife roll on her belt and hums while she works."
+  },
+  "personality": {
+    "traits": {
+      "openness": 0.6,
+      "conscientiousness": 0.8,
+      "extraversion": 0.4,
+      "agreeableness": 0.7,
+      "neuroticism": 0.3
+    },
+    "tags": [
+      "stubborn",
+      "protective",
+      "hardworking"
+    ],
+    "likes": [
+      {
+        "text": "cooking for others",
+        "strength": "strong"
+      },
+      {
+        "text": "a tidy kitchen",
+        "strength": "moderate"
+      }
+    ],
+    "dislikes": [
+      {
+        "text": "wasting food",
+        "strength": "moderate"
+      },
+      {
+        "text": "people eating in the kitchen",
+        "strength": "mild"
+      }
+    ]
+  },
+  "goals": {
+    "medium": [
+      {
+        "id": "m1",
+        "text": "Keep the kitchen stocked with ingredients",
+        "priority": "medium",
+        "successCheck": "the fridge holds food"
+      },
+      {
+        "id": "m2",
+        "text": "Make sure nobody on the crew goes hungry",
+        "priority": "high",
+        "successCheck": null
+      }
+    ],
+    "long": [
+      {
+        "id": "l1",
+        "text": "Become the most trusted cook the station has had",
+        "priority": "medium",
+        "successCheck": null
+      }
+    ]
+  }
+}

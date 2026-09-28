@@ -1,0 +1,69 @@
+{
+  "id": "npc_06",
+  "stableGuid": "5eed0000-0000-4000-8000-000000000006",
+  "ss14Profile": {
+    "name": "Felix Ortega",
+    "species": "Human",
+    "age": 37,
+    "job": "Bartender",
+    "flavorText": "A charming bartender with a trimmed moustache who remembers every regular's order."
+  },
+  "personality": {
+    "traits": {
+      "openness": 0.6,
+      "conscientiousness": 0.4,
+      "extraversion": 0.9,
+      "agreeableness": 0.7,
+      "neuroticism": 0.3
+    },
+    "tags": [
+      "fickle",
+      "sociable",
+      "gossip"
+    ],
+    "likes": [
+      {
+        "text": "good conversation",
+        "strength": "strong"
+      },
+      {
+        "text": "a full bar",
+        "strength": "moderate"
+      }
+    ],
+    "dislikes": [
+      {
+        "text": "silence",
+        "strength": "moderate"
+      },
+      {
+        "text": "people who refuse a drink",
+        "strength": "mild"
+      }
+    ]
+  },
+  "goals": {
+    "medium": [
+      {
+        "id": "m1",
+        "text": "Keep the bar stocked with drinks",
+        "priority": "high",
+        "successCheck": "the bar fridge holds a drink"
+      },
+      {
+        "id": "m2",
+        "text": "Learn the latest news from the crew",
+        "priority": "medium",
+        "successCheck": null
+      }
+    ],
+    "long": [
+      {
+        "id": "l1",
+        "text": "Make the bar the heart of the station",
+        "priority": "medium",
+        "successCheck": null
+      }
+    ]
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "id": "npc_03",
+  "stableGuid": "5eed0000-0000-4000-8000-000000000003",
+  "ss14Profile": {
+    "name": "Clara Mendes",
+    "species": "Human",
+    "age": 29,
+    "job": "Medical Doctor",
+    "flavorText": "A quick-moving doctor with ink stains on her sleeves and a stethoscope she never takes off."
+  },
+  "personality": {
+    "traits": {
+      "openness": 0.7,
+      "conscientiousness": 0.7,
+      "extraversion": 0.6,
+      "agreeableness": 0.9,
+      "neuroticism": 0.5
+    },
+    "tags": [
+      "caring",
+      "anxious"
+    ],
+    "likes": [
+      {
+        "text": "helping the injured",
+        "strength": "strong"
+      },
+      {
+        "text": "quiet evenings",
+        "strength": "moderate"
+      }
+    ],
+    "dislikes": [
+      {
+        "text": "blood on clean floors",
+        "strength": "mild"
+      },
+      {
+        "text": "people ignoring medical advice",
+        "strength": "moderate"
+      }
+    ]
+  },
+  "goals": {
+    "medium": [
+      {
+        "id": "m1",
+        "text": "Keep the medbay supplied with medkits",
+        "priority": "high",
+        "successCheck": "a medkit is in the medbay locker"
+      },
+      {
+        "id": "m2",
+        "text": "Check on anyone who looks hurt",
+        "priority": "medium",
+        "successCheck": null
+      }
+    ],
+    "long": [
+      {
+        "id": "l1",
+        "text": "Train someone else to treat wounds",
+        "priority": "low",
+        "successCheck": null
+      }
+    ]
+  }
+}

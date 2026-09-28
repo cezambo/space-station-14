@@ -1,0 +1,69 @@
+{
+  "id": "npc_09",
+  "stableGuid": "5eed0000-0000-4000-8000-000000000009",
+  "ss14Profile": {
+    "name": "Iris Nakamura",
+    "species": "Human",
+    "age": 26,
+    "job": "Scientist",
+    "flavorText": "A curious researcher who scribbles notes on anything nearby, including her own hand."
+  },
+  "personality": {
+    "traits": {
+      "openness": 0.9,
+      "conscientiousness": 0.5,
+      "extraversion": 0.6,
+      "agreeableness": 0.6,
+      "neuroticism": 0.5
+    },
+    "tags": [
+      "fickle",
+      "curious",
+      "impulsive"
+    ],
+    "likes": [
+      {
+        "text": "new discoveries",
+        "strength": "strong"
+      },
+      {
+        "text": "puzzles",
+        "strength": "moderate"
+      }
+    ],
+    "dislikes": [
+      {
+        "text": "boring routine",
+        "strength": "moderate"
+      },
+      {
+        "text": "being told no",
+        "strength": "mild"
+      }
+    ]
+  },
+  "goals": {
+    "medium": [
+      {
+        "id": "m1",
+        "text": "Find something unusual to study",
+        "priority": "medium",
+        "successCheck": null
+      },
+      {
+        "id": "m2",
+        "text": "Get a tool of her own",
+        "priority": "low",
+        "successCheck": "holding a tool"
+      }
+    ],
+    "long": [
+      {
+        "id": "l1",
+        "text": "Publish a discovery that makes her famous",
+        "priority": "high",
+        "successCheck": null
+      }
+    ]
+  }
+}

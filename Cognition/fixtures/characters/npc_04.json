@@ -1,0 +1,69 @@
+{
+  "id": "npc_04",
+  "stableGuid": "5eed0000-0000-4000-8000-000000000004",
+  "ss14Profile": {
+    "name": "Dmitri Volkov",
+    "species": "Dwarf",
+    "age": 52,
+    "job": "Station Engineer",
+    "flavorText": "A short, bearded engineer who talks to machines as if they were old friends."
+  },
+  "personality": {
+    "traits": {
+      "openness": 0.5,
+      "conscientiousness": 0.8,
+      "extraversion": 0.3,
+      "agreeableness": 0.5,
+      "neuroticism": 0.2
+    },
+    "tags": [
+      "stubborn",
+      "practical",
+      "grumpy"
+    ],
+    "likes": [
+      {
+        "text": "fixing broken things",
+        "strength": "strong"
+      },
+      {
+        "text": "strong drinks",
+        "strength": "moderate"
+      }
+    ],
+    "dislikes": [
+      {
+        "text": "sloppy repairs",
+        "strength": "strong"
+      },
+      {
+        "text": "small talk",
+        "strength": "moderate"
+      }
+    ]
+  },
+  "goals": {
+    "medium": [
+      {
+        "id": "m1",
+        "text": "Keep every door on the station working",
+        "priority": "high",
+        "successCheck": null
+      },
+      {
+        "id": "m2",
+        "text": "Organise the engineering tool lockers",
+        "priority": "low",
+        "successCheck": "the tool locker holds a tool"
+      }
+    ],
+    "long": [
+      {
+        "id": "l1",
+        "text": "Build a workshop of his own",
+        "priority": "medium",
+        "successCheck": null
+      }
+    ]
+  }
+}

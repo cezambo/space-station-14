@@ -1,0 +1,69 @@
+{
+  "id": "npc_08",
+  "stableGuid": "5eed0000-0000-4000-8000-000000000008",
+  "ss14Profile": {
+    "name": "Hiss-of-Embers",
+    "species": "Reptilian",
+    "age": 31,
+    "job": "Atmospheric Technician",
+    "flavorText": "A scaled technician with a gas mask hanging from his neck who tastes the air before entering a room."
+  },
+  "personality": {
+    "traits": {
+      "openness": 0.6,
+      "conscientiousness": 0.7,
+      "extraversion": 0.3,
+      "agreeableness": 0.4,
+      "neuroticism": 0.4
+    },
+    "tags": [
+      "stubborn",
+      "cautious",
+      "loner"
+    ],
+    "likes": [
+      {
+        "text": "clean air",
+        "strength": "strong"
+      },
+      {
+        "text": "heat",
+        "strength": "moderate"
+      }
+    ],
+    "dislikes": [
+      {
+        "text": "gas leaks",
+        "strength": "strong"
+      },
+      {
+        "text": "crowds",
+        "strength": "moderate"
+      }
+    ]
+  },
+  "goals": {
+    "medium": [
+      {
+        "id": "m1",
+        "text": "Keep the air on the station breathable",
+        "priority": "high",
+        "successCheck": null
+      },
+      {
+        "id": "m2",
+        "text": "Carry an extinguisher at all times",
+        "priority": "medium",
+        "successCheck": "holding an extinguisher"
+      }
+    ],
+    "long": [
+      {
+        "id": "l1",
+        "text": "Map every pipe on the station",
+        "priority": "low",
+        "successCheck": null
+      }
+    ]
+  }
+}

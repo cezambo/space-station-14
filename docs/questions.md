@@ -58,6 +58,18 @@ Implemented with these values in `cognition.toml`; all are config keys. Please c
   a sector edge goes clockwise (22.5° is northeast). Intensity labels are cut at midpoints of `intensity_map`.
 - Status: open (non-blocking)
 
+## Q-5 — Seed characters and stubbornness (2026-09-28, T1.08, T1.09, RD-01, RD-05)
+Implemented as below. Please confirm or correct.
+- (a) A character with both `stubborn` and `fickle` (or any two tags in `stubbornness_by_tag`) is a load error
+  rather than averaged. Unknown tags are free text and do not change stubbornness.
+- (b) Seed files never contain `baseStubbornness`; it is always derived, so the tag and the number cannot disagree.
+- (c) The 10 seeds (`fixtures/characters/README.md`) are my own: 4 stubborn, 3 fickle, 3 default, one SS14 job
+  each. Replace or edit freely; tests only require 10 valid seeds covering all three stubbornness values.
+- (d) Opinion stubbornness is stored as a decimal number because E-01 tests +0.5 increments; base stubbornness
+  from tags stays an integer.
+- (e) Characters start on personal day 1 with no acquaintances (RD-03: names are learned in play).
+- Status: open (non-blocking)
+
 # Phase 0 questions
 
 - **Q-P0-01:** With `net.bindto = "127.0.0.1"` in `Cognition/config/server_local.toml`, `ss` still showed listen on `0.0.0.0:1212` / `[::]:1212` after Ready. Confirm whether Robust rewrites bind when IPv6 is present, or whether the TOML value needs the dual-stack form (`127.0.0.1,::1`). Hub advertising is already off.

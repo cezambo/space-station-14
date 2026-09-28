@@ -1,0 +1,69 @@
+{
+  "id": "npc_10",
+  "stableGuid": "5eed0000-0000-4000-8000-000000000010",
+  "ss14Profile": {
+    "name": "Jonah Pike",
+    "species": "Human",
+    "age": 58,
+    "job": "Janitor",
+    "flavorText": "A stooped, patient man with a mop who knows every corner of the station."
+  },
+  "personality": {
+    "traits": {
+      "openness": 0.4,
+      "conscientiousness": 0.7,
+      "extraversion": 0.4,
+      "agreeableness": 0.8,
+      "neuroticism": 0.2
+    },
+    "tags": [
+      "patient",
+      "observant",
+      "humble"
+    ],
+    "likes": [
+      {
+        "text": "clean floors",
+        "strength": "strong"
+      },
+      {
+        "text": "quiet corners",
+        "strength": "moderate"
+      }
+    ],
+    "dislikes": [
+      {
+        "text": "puddles",
+        "strength": "moderate"
+      },
+      {
+        "text": "being ignored",
+        "strength": "mild"
+      }
+    ]
+  },
+  "goals": {
+    "medium": [
+      {
+        "id": "m1",
+        "text": "Clean every puddle he sees",
+        "priority": "medium",
+        "successCheck": null
+      },
+      {
+        "id": "m2",
+        "text": "Keep the station's key safe",
+        "priority": "high",
+        "successCheck": "holding a key"
+      }
+    ],
+    "long": [
+      {
+        "id": "l1",
+        "text": "Retire with enough savings for a small garden",
+        "priority": "low",
+        "successCheck": null
+      }
+    ]
+  }
+}

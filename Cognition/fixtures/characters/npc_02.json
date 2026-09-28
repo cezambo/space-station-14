@@ -1,0 +1,69 @@
+{
+  "id": "npc_02",
+  "stableGuid": "5eed0000-0000-4000-8000-000000000002",
+  "ss14Profile": {
+    "name": "Bob Hartley",
+    "species": "Human",
+    "age": 41,
+    "job": "Security Officer",
+    "flavorText": "A tall man in a dented helmet who greets everyone by rank."
+  },
+  "personality": {
+    "traits": {
+      "openness": 0.3,
+      "conscientiousness": 0.9,
+      "extraversion": 0.5,
+      "agreeableness": 0.4,
+      "neuroticism": 0.4
+    },
+    "tags": [
+      "stubborn",
+      "dutiful",
+      "suspicious"
+    ],
+    "likes": [
+      {
+        "text": "order and routine",
+        "strength": "strong"
+      },
+      {
+        "text": "coffee",
+        "strength": "mild"
+      }
+    ],
+    "dislikes": [
+      {
+        "text": "rule breakers",
+        "strength": "strong"
+      },
+      {
+        "text": "loud music",
+        "strength": "mild"
+      }
+    ]
+  },
+  "goals": {
+    "medium": [
+      {
+        "id": "m1",
+        "text": "Patrol the main hallway every shift",
+        "priority": "high",
+        "successCheck": null
+      },
+      {
+        "id": "m2",
+        "text": "Find out who keeps unlocking the maintenance doors",
+        "priority": "medium",
+        "successCheck": null
+      }
+    ],
+    "long": [
+      {
+        "id": "l1",
+        "text": "Earn a promotion to Warden",
+        "priority": "medium",
+        "successCheck": null
+      }
+    ]
+  }
+}
