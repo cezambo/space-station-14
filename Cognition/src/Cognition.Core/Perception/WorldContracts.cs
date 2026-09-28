@@ -73,6 +73,10 @@ public sealed record RawBiophysics(
     float OxygenSaturation,
     bool Conscious);
 
+/// <summary>An item the agent itself holds; <see cref="Name"/> is what the agent calls it.</summary>
+public sealed record RawHeldItem(string Ref, string Name);
+
+/// <summary><see cref="Held"/> lists the agent's own hands (T1.15 menus need their names).</summary>
 public sealed record RawPerception(
     string AgentGuid,
     Vec2 Self,
@@ -80,7 +84,8 @@ public sealed record RawPerception(
     IReadOnlyList<RawPerceivedEntity> Seen,
     IReadOnlyList<RawSound> Heard,
     RawEnvironment Env,
-    RawBiophysics Body);
+    RawBiophysics Body,
+    IReadOnlyList<RawHeldItem>? Held = null);
 
 public enum ActionVerb
 {
@@ -108,8 +113,8 @@ public enum ActionVerb
 /// </summary>
 public sealed record Affordance(ActionVerb Verb, string? TargetRef = null, string? ItemRef = null);
 
-/// <summary>A place the agent knows and can walk to (RJ-03 <c>move_target</c>).</summary>
-public sealed record KnownDestination(string Ref, string Name, Vec2 Position);
+/// <summary>A place the agent knows and can walk to (RJ-03 <c>move_target</c>); beds also feed <c>sleep_where</c>.</summary>
+public sealed record KnownDestination(string Ref, string Name, Vec2 Position, bool IsBed = false);
 
 public sealed record ActionAffordances(
     IReadOnlyList<Affordance> Actions,

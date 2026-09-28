@@ -127,7 +127,9 @@ public static class CognitionConfigLoader
                 MaxIntervalS: decision.Double("max_interval_s"),
                 IdleMaxIntervalS: decision.Double("idle_max_interval_s"),
                 EmotionEveryN: decision.Int("emotion_every_n"),
-                Fanout: decision.Enum("fanout", FanoutModes)),
+                Fanout: decision.Enum("fanout", FanoutModes),
+                ShortlistTop: decision.Int("shortlist_top"),
+                ShortlistBatch: decision.Int("shortlist_batch")),
             Scheduler: new SchedulerConfig(
                 WUrgency: scheduler.Double("w_urgency"),
                 WWait: scheduler.Double("w_wait"),

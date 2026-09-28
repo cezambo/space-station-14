@@ -37,6 +37,9 @@ public static partial class CognitionConfigValidator
         Ordered(e, ("decision.min_interval_s", d.MinIntervalS), ("decision.max_interval_s", d.MaxIntervalS),
             ("decision.idle_max_interval_s", d.IdleMaxIntervalS));
         Positive("decision.emotion_every_n", d.EmotionEveryN, e);
+        if (d.ShortlistTop is < 2 or > 255)
+            e.Add($"decision.shortlist_top: {d.ShortlistTop} must be 2-255 (a Choice needs 2-255 options, RJ-04)");
+        Positive("decision.shortlist_batch", d.ShortlistBatch, e);
 
         NonNegative("scheduler.w_urgency", c.Scheduler.WUrgency, e);
         NonNegative("scheduler.w_wait", c.Scheduler.WWait, e);

@@ -80,7 +80,8 @@ public sealed partial class SandboxWorld
             seen.OrderBy(s => s.Dist).ThenBy(s => s.E.EntityRef, StringComparer.Ordinal).Select(s => s.E).ToList(),
             heard,
             EnvironmentAt(a),
-            BodyOf(a));
+            BodyOf(a),
+            a.HeldItems.Select(i => new RawHeldItem(i.Ref, i.Name)).ToList());
     }
 
     private RawPerceivedEntity Describe(Agent viewer, Entity e, Cell cell)

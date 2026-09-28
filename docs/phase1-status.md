@@ -7,8 +7,8 @@ Updated by the agent after each task. "Difficulty" guides which model should tak
 | T1.01–T1.12 | done | | see git log |
 | T1.13 Scenario DSL | done | | 5 scripted scenarios in CI, 3 agent scenarios waiting for T1.16 |
 | T1.14 ContextAssembler | done | | p99 measured with T1.16; choices in Q-8 |
-| T1.15 DecisionCallBuilder | next | **high** | Jev question design (RJ-16/17/20), two-stage >255 |
-| T1.16 DecisionInterpreter | todo | medium | per-question thresholds; closes the loop for agent scenarios |
+| T1.15 DecisionCallBuilder | done | | property test over 50 layouts: 0 invalid options; choices in Q-9 |
+| T1.16 DecisionInterpreter | next | medium | per-question thresholds; closes the loop for agent scenarios |
 | T1.17 Scheduler | todo | medium | |
 | T1.18 SpeechService | todo | medium | |
 | T1.19 DeepThinkingService | todo | medium | |

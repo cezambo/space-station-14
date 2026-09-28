@@ -54,14 +54,57 @@ public sealed class Vocabulary
         ["bleeding"] = [],
     };
 
+    /// <summary>Decision menu option descriptions (T1.15, RJ-16/RJ-20), with the placeholders each must use.</summary>
+    public static readonly IReadOnlyDictionary<string, string[]> MenuPlaceholders = new Dictionary<string, string[]>
+    {
+        ["category_nothing"] = [],
+        ["category_move"] = [],
+        ["category_interact"] = [],
+        ["category_use_item"] = [],
+        ["category_inventory"] = [],
+        ["category_speak"] = [],
+        ["category_think"] = [],
+        ["category_sleep"] = [],
+        ["at"] = ["text", "position"],
+        ["in_hand"] = [],
+        ["walk_to"] = ["target"],
+        ["none_of_these"] = [],
+        ["walk_direction"] = ["direction"],
+        ["open"] = ["target"],
+        ["close"] = ["target"],
+        ["lock"] = ["target", "item"],
+        ["unlock"] = ["target", "item"],
+        ["wake"] = ["target"],
+        ["use"] = ["item"],
+        ["use_on"] = ["item", "target"],
+        ["eat"] = ["item"],
+        ["drink"] = ["item"],
+        ["pickup"] = ["item"],
+        ["drop"] = ["item"],
+        ["put"] = ["item", "target"],
+        ["take"] = ["item", "target"],
+        ["give"] = ["item", "target"],
+        ["speak_to"] = ["target"],
+        ["speak_everyone"] = [],
+        ["think_light"] = [],
+        ["think_deep"] = [],
+        ["sleep_here"] = [],
+        ["sleep_this_bed"] = [],
+        ["sleep_bed"] = ["target"],
+        ["nearest"] = ["text"],
+    };
+
     private readonly Dictionary<string, Dictionary<string, string>> _words;
     private readonly Dictionary<string, string> _gases;
     private readonly Dictionary<string, string> _needs;
     private readonly Dictionary<string, string> _phrases;
+    private readonly Dictionary<string, string> _menu;
 
     private Vocabulary(Dictionary<string, Dictionary<string, string>> words, Dictionary<string, string> gases,
-        Dictionary<string, string> needs, Dictionary<string, string> phrases, IReadOnlySet<string> stopwords)
+        Dictionary<string, string> needs, Dictionary<string, string> phrases, Dictionary<string, string> menu,
+        IReadOnlySet<string> stopwords)
     {
+        _menu = menu;
         _words = words;
         _gases = gases;
         _needs = needs;
@@ -76,9 +119,13 @@ public sealed class Vocabulary
     public string NeedName(string need) => _needs[need];
 
     /// <summary>A perception phrase with its placeholders filled (values are inserted literally).</summary>
-    public string Phrase(string key, params (string Name, string Value)[] values)
+    public string Phrase(string key, params (string Name, string Value)[] values) => Fill(_phrases[key], values);
+
+    /// <summary>A menu option description with its placeholders filled (values are inserted literally).</summary>
+    public string Menu(string key, params (string Name, string Value)[] values) => Fill(_menu[key], values);
+
+    private static string Fill(string text, (string Name, string Value)[] values)
     {
-        var text = _phrases[key];
         foreach (var (name, value) in values)
         {
             text = text.Replace("{{" + name + "}}", value, StringComparison.Ordinal);
@@ -169,24 +216,8 @@ public sealed class Vocabulary
             errors.Add($"{FileName}: need.{n} is missing");
         }
 
-        var phrases = Section(root, "perception", errors);
-        foreach (var (key, names) in PhrasePlaceholders)
-        {
-            if (!phrases.TryGetValue(key, out var phrase))
-            {
-                errors.Add($"{FileName}: perception.{key} is missing");
-                continue;
-            }
-
-            var used = Placeholders.NamesIn(phrase).Order(StringComparer.Ordinal);
-            if (!used.SequenceEqual(names.Order(StringComparer.Ordinal)))
-                errors.Add($"{FileName}: perception.{key} must use exactly {(names.Length == 0 ? "no placeholders" : string.Join(", ", names.Select(n => "{{" + n + "}}")))}");
-        }
-
-        foreach (var key in phrases.Keys.Where(k => !PhrasePlaceholders.ContainsKey(k)))
-        {
-            errors.Add($"{FileName}: perception.{key} is not a known phrase");
-        }
+        var phrases = Phrases(root, "perception", PhrasePlaceholders, errors);
+        var menu = Phrases(root, "menu", MenuPlaceholders, errors);
 
         var stopwords = new HashSet<string>(StringComparer.Ordinal);
         if (root.Children.TryGetValue(new YamlScalarNode("goal_stopwords"), out var sw) && sw is YamlSequenceNode seq)
@@ -194,14 +225,39 @@ public sealed class Vocabulary
         else
             errors.Add($"{FileName}: 'goal_stopwords' must be a list");
 
-        var known = Sections.Select(s => s.Section).Concat(["gas", "need", "perception", "goal_stopwords"])
+        var known = Sections.Select(s => s.Section).Concat(["gas", "need", "perception", "menu", "goal_stopwords"])
             .ToHashSet(StringComparer.Ordinal);
         foreach (var key in root.Children.Keys.Select(k => k.ToString()).Where(k => !known.Contains(k)))
         {
             errors.Add($"{FileName}: unknown section '{key}'");
         }
 
-        return new Vocabulary(words, gases, needs, phrases, stopwords);
+        return new Vocabulary(words, gases, needs, phrases, menu, stopwords);
+    }
+
+    private static Dictionary<string, string> Phrases(YamlMappingNode root, string section,
+        IReadOnlyDictionary<string, string[]> spec, List<string> errors)
+    {
+        var phrases = Section(root, section, errors);
+        foreach (var (key, names) in spec)
+        {
+            if (!phrases.TryGetValue(key, out var phrase))
+            {
+                errors.Add($"{FileName}: {section}.{key} is missing");
+                continue;
+            }
+
+            var used = Placeholders.NamesIn(phrase).Order(StringComparer.Ordinal);
+            if (!used.SequenceEqual(names.Order(StringComparer.Ordinal)))
+                errors.Add($"{FileName}: {section}.{key} must use exactly {(names.Length == 0 ? "no placeholders" : string.Join(", ", names.Select(n => "{{" + n + "}}")))}");
+        }
+
+        foreach (var key in phrases.Keys.Where(k => !spec.ContainsKey(k)))
+        {
+            errors.Add($"{FileName}: {section}.{key} is not a known phrase");
+        }
+
+        return phrases;
     }
 
     private static Dictionary<string, string> Section(YamlMappingNode root, string name, List<string> errors)

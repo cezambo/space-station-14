@@ -91,7 +91,7 @@ public sealed partial class SandboxWorld
             if (Entity(r) is not (Bed or Container or Door) || DestinationCell(a, r) is null)
                 continue;
             var e = Entity(r)!;
-            destinations.Add(new KnownDestination(r, e.Name, Center(CellOf(e))));
+            destinations.Add(new KnownDestination(r, e.Name, Center(CellOf(e)), e is Bed));
         }
 
         var open = Directions.Where(d => CanStep(a.Cell, a.Cell.Offset(d.Dx, d.Dy))).Select(d => d.Dir).ToList();

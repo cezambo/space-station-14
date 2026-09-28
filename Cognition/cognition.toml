@@ -64,6 +64,8 @@ min_interval_s = 1.0
 max_interval_s = 8.0
 idle_max_interval_s = 20.0
 emotion_every_n = 5
+shortlist_top = 30 # RJ-04: menus over 255 options -> Score shortlist -> Choice over the best 30
+shortlist_batch = 50 # Score questions per shortlist call
 fanout = "full" # full | reduced — T1.03b: billed per call, so full (docs/reports/T1.03b-billing.md)
 
 [scheduler]

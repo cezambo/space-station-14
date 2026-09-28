@@ -1,0 +1,19 @@
+purpose: menu_shortlist
+# RJ-04 first stage: when a menu has more than 255 options, each option is scored in batches and only the
+# best-fitting ones go to the Choice. The state is the decision state, already rendered.
+repeat_per: option
+state_template: |
+  {{decision_state}}
+
+questions:
+  fit:
+    type: score
+    instructions: >
+      Suppose this character is choosing among many possible actions and considers this one:
+      "{{option}}". How well would it fit what they want to do right now?
+    criteria:
+      - "It would make no sense for them now"
+      - "Unlikely, but possible"
+      - "A reasonable option"
+      - "A good fit"
+      - "Exactly what they would do"

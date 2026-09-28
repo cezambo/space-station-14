@@ -17,13 +17,18 @@ public enum PerceptionCategory
     Item,
 }
 
+/// <summary><see cref="Name"/> is how this character refers to the entity (known name or description).</summary>
 public sealed record PerceivedLine(
     string Ref,
+    string Name,
     PerceptionCategory Category,
     double Salience,
     DistanceBand Distance,
     Compass? Direction,
     string Text);
+
+/// <summary>How the perceiving character refers to an entity, and where it is from them (null when held).</summary>
+public sealed record EntityLabel(string Name, string? Position);
 
 public sealed record HeardLine(string? SpeakerGuid, DistanceBand Distance, Compass? Direction, bool ToYou, string Text);
 
@@ -102,6 +107,27 @@ public sealed partial class PerceptionFormatter
     }
 
     /// <summary>
+    /// Labels for everything seen (not only what fits in the block) and the character's own held items, so that
+    /// decision menus can describe every affordance (T1.15).
+    /// </summary>
+    public Dictionary<string, EntityLabel> Labels(RawPerception p, PerceptionContext ctx)
+    {
+        var labels = new Dictionary<string, EntityLabel>(StringComparer.Ordinal);
+        foreach (var e in p.Seen)
+        {
+            var name = e.IsPerson ? NameOf(e.StableGuid, e.DisplayName, ctx, markKnown: false) : e.DisplayName;
+            labels[e.EntityRef] = new EntityLabel(name, Position(p, e.Position, out _, out _));
+        }
+
+        foreach (var item in p.Held ?? [])
+        {
+            labels[item.Ref] = new EntityLabel(item.Name, null);
+        }
+
+        return labels;
+    }
+
+    /// <summary>
     /// Drops the <paramref name="count"/> least salient seen lines (RJ-08 trim step); ties drop the later line.
     /// Heard, environment and body are never trimmed.
     /// </summary>
@@ -162,6 +188,7 @@ public sealed partial class PerceptionFormatter
     private PerceivedLine SeenLine(RawPerception p, RawPerceivedEntity e, float distance, double salience, PerceptionContext ctx)
     {
         var sep = _v.Phrase("field_separator");
+        var name = e.IsPerson ? NameOf(e.StableGuid, e.DisplayName, ctx, markKnown: false) : e.DisplayName;
         var fields = new List<string>
         {
             e.IsPerson ? NameOf(e.StableGuid, e.DisplayName, ctx, markKnown: true) : e.DisplayName,
@@ -175,7 +202,7 @@ public sealed partial class PerceptionFormatter
             fields.Add(e.IsPerson ? _v.Phrase("looks", ("trait", traits)) : traits);
         }
 
-        return new PerceivedLine(e.EntityRef, e.IsItem ? PerceptionCategory.Item : PerceptionCategory.Entity, salience, band, dir,
+        return new PerceivedLine(e.EntityRef, name, e.IsItem ? PerceptionCategory.Item : PerceptionCategory.Entity, salience, band, dir,
             string.Join(sep, fields));
     }
 

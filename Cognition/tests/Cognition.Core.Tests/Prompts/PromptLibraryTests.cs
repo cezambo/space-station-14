@@ -58,7 +58,7 @@ public sealed class PromptLibraryTests
             {
                 "decision", "memory_filter", "opinion_classify", "opinion_tags", "goal_relevance", "temporal_check",
                 "emotion_op_validate", "modifier_dedupe", "speech_stale", "goal_valid", "goal_done",
-                "personality_update", "judge_requirement",
+                "personality_update", "judge_requirement", "menu_shortlist",
             }));
             Assert.That(library.LlmNames, Is.EquivalentTo(new[]
             {

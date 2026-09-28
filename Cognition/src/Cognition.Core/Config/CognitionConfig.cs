@@ -67,7 +67,9 @@ public sealed record DecisionConfig(
     double MaxIntervalS,
     double IdleMaxIntervalS,
     int EmotionEveryN,
-    FanoutMode Fanout);
+    FanoutMode Fanout,
+    int ShortlistTop,
+    int ShortlistBatch);
 
 public sealed record SchedulerConfig(double WUrgency, double WWait, double WVisible);
 

@@ -36,11 +36,7 @@ questions:
     instructions: >
       What kind of action should this character take right now? Choose "nothing" only if continuing
       the current action is clearly the best option.
-    criteria: "{{category_options}}"
-    # nothing: Keep doing the current action | move: Walk somewhere | interact: Interact with something
-    # within reach | use_item: Use an item being held or carried | inventory: Rearrange, pick up, drop or
-    # store items | speak: Say something to someone | think: Stop to think carefully about plans |
-    # sleep: Go to sleep
+    criteria: "{{category_options}}" # descriptions: vocabulary.yaml menu.category_*; only possible categories
 
   move_target:
     type: choice
@@ -116,9 +112,7 @@ questions:
     include_when: "budget_allows_any && (fanout == full || likely(think))"
     instructions: >
       Suppose this character stops to think carefully. How deeply would they think?
-    criteria: "{{think_options}}"
-    # light: Think briefly about what to do next (cheap)
-    # deep: Reconsider plans thoroughly using everything they know (expensive)
+    criteria: "{{think_options}}" # descriptions: vocabulary.yaml menu.think_*; only affordable modes
 
   sleep_where:
     type: choice

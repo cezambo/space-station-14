@@ -5,7 +5,7 @@ namespace Cognition.Scenario.Tests.Sandbox;
 
 internal static class SandboxTestKit
 {
-    private static readonly Lazy<CognitionConfig> LazyConfig = new(() =>
+    private static readonly Lazy<string> LazyRoot = new(() =>
     {
         var dir = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
         while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "Cognition.sln")))
@@ -13,8 +13,14 @@ internal static class SandboxTestKit
             dir = dir.Parent;
         }
 
-        return CognitionConfigLoader.LoadFile(Path.Combine(dir!.FullName, "cognition.toml"), _ => null);
+        return dir!.FullName;
     });
+
+    private static readonly Lazy<CognitionConfig> LazyConfig =
+        new(() => CognitionConfigLoader.LoadFile(Path.Combine(CognitionRoot, "cognition.toml"), _ => null));
+
+    /// <summary>The <c>Cognition/</c> directory.</summary>
+    public static string CognitionRoot => LazyRoot.Value;
 
     public static CognitionConfig Config => LazyConfig.Value;
 

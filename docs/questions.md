@@ -119,6 +119,27 @@ Implemented as below; weights and bands are in `cognition.toml`, words in `promp
   loop runs agent scenarios (T1.16).
 - Status: open (non-blocking)
 
+## Q-9 (T1.15) Decision menu choices
+
+- (a) Contract additions (plan §2.2): `RawPerception.Held` (the agent's own hands, so menus can name held items)
+  and `KnownDestination.IsBed` (feeds `sleep_where`). Both optional; the sandbox fills them.
+- (b) Verb → category: interact = open, close, lock, unlock, wake; use_item = use, eat, drink; inventory =
+  pickup, drop, put, take, give. A category is offered only when its sub-menu has an option (RJ-05).
+- (c) A menu with a single possible option is not asked (Jev needs 2+); the interpreter takes that option.
+  If only "keep doing the current action" is possible, no call is made.
+- (d) `sleep` is offered only when fatigue is at least mild (the `sleep_where` include_when). Options: sleep here
+  (or "in the bed right here"), then known beds by distance; the nearest is marked when there are several.
+- (e) Option descriptions live in `vocabulary.yaml` `menu:`; the category and think descriptions that were YAML
+  comments in `decision.yaml` moved there (P7).
+- (f) RJ-04: over 255 options → one Score question per option ("how well would it fit"), 50 per call, same state
+  as the decision; the 30 best (Score compared only, RJ-19; ties keep the earlier option) go to the Choice.
+  The context budget counts oversized menus as 30 options.
+- (g) Labels come from the full raw perception, not the capped SEEN block, so an affordance is never dropped
+  because its target did not fit in SEEN.
+- (h) In `reduced` fan-out a category can be chosen whose sub-menu was not asked; that needs a follow-up call
+  (not implemented while `fanout = "full"`, D12).
+- Status: open (non-blocking)
+
 # Phase 0 questions
 
 - **Q-P0-01:** With `net.bindto = "127.0.0.1"` in `Cognition/config/server_local.toml`, `ss` still showed listen on `0.0.0.0:1212` / `[::]:1212` after Ready. Confirm whether Robust rewrites bind when IPv6 is present, or whether the TOML value needs the dual-stack form (`127.0.0.1,::1`). Hub advertising is already off.
