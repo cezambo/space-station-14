@@ -1,0 +1,13 @@
+purpose: modifier_dedupe
+state_template: |
+  NEW LASTING FEELING: {{emotion}} because "{{reason}}"
+  EXISTING LASTING FEELINGS:
+  {{existing_modifiers}}
+questions:
+  same_cause:
+    type: choice
+    threshold_key: modifier_dedupe_confidence
+    instructions: >
+      Is the new lasting feeling caused by the same thing as one of the existing ones? If so, pick it;
+      otherwise pick "new_cause".
+    criteria: "{{existing_modifier_options}}" # modifier ids + new_cause

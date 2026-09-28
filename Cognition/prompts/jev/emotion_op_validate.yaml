@@ -1,0 +1,14 @@
+purpose: emotion_op_validate
+state_template: |
+  Character: {{name}}. Personality: {{personality_summary}}.
+  MEMORIES OF THE PERIOD:
+  {{daily_summaries}}
+  PROPOSED LASTING FEELING: {{op}} — {{emotion}}, {{intensity_band}}, lasting {{duration_band}},
+  because "{{reason}}". Justification given: "{{justification}}"
+questions:
+  justified:
+    type: noul
+    threshold_key: emotion_op_valid
+    instructions: >
+      Given these memories and this personality, is this change to the character's lasting feelings
+      justified?

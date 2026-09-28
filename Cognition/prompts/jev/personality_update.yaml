@@ -1,0 +1,13 @@
+purpose: personality_update
+state_template: |
+  Character: {{name}}. Current personality: {{personality_summary}}.
+  FIFTEEN DAYS OF MEMORIES:
+  {{daily_summaries}}
+  PROPOSED CHANGE: "{{proposed_change}}"
+questions:
+  justified:
+    type: noul
+    threshold_key: personality_change
+    instructions: >
+      Do these fifteen days contain experiences significant enough to justify this lasting change in
+      the person's personality?

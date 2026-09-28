@@ -1,0 +1,13 @@
+purpose: goal_valid
+state_template: |
+  Character: {{name}} ({{job}}). Personality: {{personality_summary}}.
+  While someone else controlled this character, these things happened:
+  {{player_period_memory}}
+  PERCEPTION NOW:
+  {{perception_block}}
+repeat_per: immediate_goals
+questions:
+  still_valid:
+    type: noul
+    threshold_key: goal_valid
+    instructions: Is the immediate goal "{{goal_text}}" still sensible given the current situation?

@@ -29,6 +29,20 @@ Format per entry:
   Not needed before T1.21.
 - Status: open
 
+## Q-3 — Prompt library choices made in T1.07 (2026-09-28, P7, RL-04, RA-03)
+Implemented with these defaults; each is easy to change. Please confirm or correct.
+- (a) "Missing placeholder = load-time error": values exist only at render time, so a missing value fails
+  the **render** (all missing names reported, nothing sent). Load checks syntax, schemas, option/level counts
+  and that every `threshold_key` exists in `[thresholds]`.
+- (b) New fragment `llm/_json_reply.md`, appended to SYSTEM of every schema template with the schema inline,
+  because schema descriptions do not reach the model (T1.04 finding; verified fixed live). New fragment
+  `llm/_json_repair.md` for the repair round. The 11 spec templates are unchanged.
+- (c) `repeat_per` question IDs are 0-based (`still_valid_0`, `still_valid_1`, …), matching list indexes.
+- (d) Values cannot open/close a `<tag>` used by the template (e.g. `</heard>` in speech becomes `(heard)`).
+- (e) The output-token limit per LLM template is not in the spec; the caller passes it at render. Proposal:
+  a `[llm_output_tokens]` table in `cognition.toml` when the first consumer lands (T1.23).
+- Status: open (non-blocking)
+
 # Phase 0 questions
 
 - **Q-P0-01:** With `net.bindto = "127.0.0.1"` in `Cognition/config/server_local.toml`, `ss` still showed listen on `0.0.0.0:1212` / `[::]:1212` after Ready. Confirm whether Robust rewrites bind when IPv6 is present, or whether the TOML value needs the dual-stack form (`127.0.0.1,::1`). Hub advertising is already off.

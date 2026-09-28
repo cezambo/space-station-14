@@ -1,0 +1,15 @@
+purpose: opinion_classify
+state_template: |
+  Character: {{name}}. Personality: {{personality_summary}}.
+  EXISTING OPINION about {{target}}: "{{nuance_description}}"
+  NEW IMPRESSION: "{{impression}}"
+questions:
+  relation:
+    type: choice
+    instructions: >
+      How does the new impression relate to the existing opinion, from this character's point of view?
+    criteria:
+      contradicts: "The impression goes against the opinion"
+      strongly_agrees: "The impression clearly and strongly confirms the opinion"
+      agrees: "The impression mildly supports the opinion"
+      irrelevant: "The impression has nothing to do with the opinion"

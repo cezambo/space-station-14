@@ -1,0 +1,10 @@
+purpose: temporal_check
+state_template: |
+  TEXT: "{{text}}"
+questions:
+  has_time_reference:
+    type: noul
+    threshold_key: temporal_fail
+    instructions: >
+      Does this text refer to a specific time or moment, such as yesterday, today, recently, last week,
+      a specific day, or how long ago something happened?

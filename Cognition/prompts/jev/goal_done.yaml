@@ -1,0 +1,13 @@
+purpose: goal_done
+state_template: |
+  Character: {{name}}.
+  GOAL: "{{goal_text}}"
+  PERCEPTION NOW:
+  {{perception_block}}
+  INVENTORY: {{inventory}}
+  RECENT MEMORY: {{recent_memory_short}}
+questions:
+  accomplished:
+    type: noul
+    threshold_key: goal_done
+    instructions: Based on what the character perceives and remembers, has this goal been accomplished?

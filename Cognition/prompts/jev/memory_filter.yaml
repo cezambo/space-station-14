@@ -1,0 +1,24 @@
+purpose: memory_filter
+# Default: one call per event (2 questions). If billing is per call (T1.03b), the builder MAY batch events:
+# events listed in state, questions keep_<i>/importance_<i> quoting the event text in instructions.
+state_template: |
+  Character: {{name}} ({{job}}). Personality: {{personality_summary}}.
+  Current goals: immediate: {{immediate_goals}}; medium: {{medium_goals}}.
+  The following happened in the character's presence:
+  EVENT: {{event_text}}
+questions:
+  keep:
+    type: noul
+    threshold_key: memory_keep
+    instructions: >
+      Would this person plausibly remember this event at the end of the day? Routine, repetitive or
+      irrelevant events should be answered no.
+  importance:
+    type: score
+    instructions: How important is this event to this person?
+    criteria:
+      - "Trivial: background noise"
+      - "Minor: slightly notable"
+      - "Moderate: relevant to goals or relationships"
+      - "Major: changes plans or feelings"
+      - "Critical: danger, loss or a turning point"

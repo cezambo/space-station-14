@@ -70,8 +70,12 @@ comes from a prompt template (P7), so the client takes it as `RepairMessage`. Se
 
 1. **Schema descriptions do not reliably reach the model.** The light schema call had fewer input tokens
    than the plain call, and the reply was structurally valid but empty of meaning (`"full": "Maya's day"`).
-   The schema acts as a grammar constraint only. **Templates must describe every field in the prompt text**
-   (length, person, tense); the schema only enforces shape. Applies to T1.07 template reconstruction.
+   The schema acts as a grammar constraint only. **Fix (T1.07):** `prompts/llm/_json_reply.md` is appended
+   to the SYSTEM section of every schema template and includes the schema itself. Verified live with the real
+   `daily_summary` template (`llm-template-ping`, 2026-09-28): both roles returned meaningful `full`/`short`
+   with no repair round. Light: 282 in / 227 out, $0.00016, 8.1 s; the reply ignored "first person" in `short`
+   and wrote one paragraph instead of 2-3 (E-xx prompt tuning). Heavy (`max`): 282 in / 3,226 out (3,038
+   reasoning), $0.0146, 19.9 s.
 2. **Provider routing varies per call** (Wafer, DigitalOcean, Crusoe for the same model). Quality and
    reasoning behaviour may differ between providers; one light call reported 0 reasoning tokens despite
    `mandatory = true`. Pinning `provider.order` is a candidate knob for E-xx if quality varies.

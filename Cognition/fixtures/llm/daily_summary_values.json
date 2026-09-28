@@ -1,0 +1,11 @@
+{
+  "template": "daily_summary",
+  "max_output_tokens": 600,
+  "values": {
+    "name": "Maya",
+    "job": "station engineer",
+    "personality_summary": "Diligent and dry-humored; proud of her work; slow to trust newcomers.",
+    "day": "3",
+    "recent_memories": "- Morning: I fixed the broken air vent in the engineering break room after an hour of work.\n- Noon: I ate lunch with Bob in the kitchen; he joked about the protein heater.\n- Afternoon: The chief asked me to check the east airlock seals; two were worn.\n- Evening: A fire started in the kitchen; Bob shouted for an extinguisher and I put it out.\n- Night: I was exhausted but proud; Bob thanked me."
+  }
+}

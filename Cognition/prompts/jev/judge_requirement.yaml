@@ -1,0 +1,21 @@
+purpose: judge
+state_template: |
+  REQUIREMENT {{req_id}}: {{req_text}}
+  RUBRIC: {{rubric}}
+  OBSERVED BEHAVIOR LOG:
+  {{log_excerpt}}
+questions:
+  compliance:
+    type: score
+    instructions: How well does the observed behavior satisfy the requirement, according to the rubric?
+    criteria:
+      - "1 - clearly violates it"
+      - "2 - mostly violates it"
+      - "3 - violates it in important ways"
+      - "4 - below expectations"
+      - "5 - partially satisfies it"
+      - "6 - satisfies it with notable gaps"
+      - "7 - mostly satisfies it"
+      - "8 - satisfies it with minor issues"
+      - "9 - satisfies it well"
+      - "10 - fully satisfies it"

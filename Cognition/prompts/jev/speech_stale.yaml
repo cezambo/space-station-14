@@ -1,0 +1,12 @@
+purpose: speech_stale
+state_template: |
+  Character: {{name}}.
+  PLANNED LINE: "{{line}}" (to {{speak_target}}, purpose: {{speak_intent}})
+  PERCEPTION NOW:
+  {{perception_block}}
+  RECENT EVENTS: {{recent_memory_short}}
+questions:
+  still_makes_sense:
+    type: noul
+    threshold_key: speech_stale_ok
+    instructions: Given what the character perceives now, would saying the planned line still make sense?

@@ -1,0 +1,14 @@
+purpose: goal_relevance
+state_template: |
+  Character: {{name}}. Personality: {{personality_summary}}.
+  The character's opinion about {{target}} changed.
+  BEFORE: "{{old_opinion}}"
+  NOW: "{{new_opinion}}"
+repeat_per: all_goals
+questions:
+  relevant:
+    type: noul
+    threshold_key: goal_relevance
+    instructions: >
+      Is the {{horizon}} goal "{{goal_text}}" affected by this change of opinion, so that the character
+      might want to keep it differently, change it or drop it?

@@ -1,0 +1,11 @@
+purpose: opinion_tags
+state_template: |
+  Character: {{name}}.
+  IMPRESSION: "{{impression}}"
+repeat_per: general_opinions # one Noul per existing general opinion topic
+questions:
+  about_topic:
+    type: noul
+    instructions: >
+      Does this impression say something about the topic "{{topic}}"
+      (the character currently believes: "{{topic_opinion}}")?

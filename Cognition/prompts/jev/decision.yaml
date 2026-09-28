@@ -1,0 +1,152 @@
+purpose: decision
+state_template: |
+  You are deciding the next action for {{name}}, a {{age}}-year-old {{species}} working as {{job}}
+  on a space station. Decide as this specific person would, given who they are and what they perceive.
+  Only the information below is known to them.
+
+  TIME: station time {{station_time}}; personal day {{day}}, {{day_phase}}.
+  CURRENT ACTION: {{current_action}}
+  INVENTORY: {{inventory}}
+
+  PERSONALITY: {{personality_summary}}
+  LIKES: {{likes}} | DISLIKES: {{dislikes}}
+  EMOTION: mostly {{emotion_primary}}{{emotion_secondary}}. Lasting feelings: {{modifiers}}
+
+  GOALS
+  Immediate: {{immediate_goals}}
+  Medium-term: {{medium_goals}}
+
+  OPINIONS ABOUT WHO/WHAT IS PRESENT: {{present_opinions}}
+
+  PERCEPTION
+  {{perception_block}}
+
+  RECENT MEMORY (oldest first):
+  {{recent_memory}}
+  PREVIOUS DAY IN BRIEF: {{last_daily_short}}
+
+  THINKING BUDGET: {{budget_band}}. Light thought is cheap (about 1 unit). Deep thought is expensive
+  (about 6 units) and should be used only when goals seem impossible or a major, hard-to-reverse decision
+  is needed. Speaking and acting do not use the budget.
+
+questions:
+  action_category:
+    type: choice
+    threshold_key: action_confidence
+    instructions: >
+      What kind of action should this character take right now? Choose "nothing" only if continuing
+      the current action is clearly the best option.
+    criteria: "{{category_options}}"
+    # nothing: Keep doing the current action | move: Walk somewhere | interact: Interact with something
+    # within reach | use_item: Use an item being held or carried | inventory: Rearrange, pick up, drop or
+    # store items | speak: Say something to someone | think: Stop to think carefully about plans |
+    # sleep: Go to sleep
+
+  move_target:
+    type: choice
+    include_when: "fanout == full || likely(move)"
+    instructions: >
+      Suppose this character decides to walk somewhere now. Which destination would they choose?
+      Pick "none_of_these" if no listed destination fits their goals.
+    criteria: "{{move_target_options}}"
+
+  move_direction:
+    type: choice
+    include_when: "fanout == full || likely(move)"
+    instructions: >
+      Suppose this character walks in a direction instead of to a named destination. Which direction
+      best serves their goals, given what they perceive?
+    criteria: "{{direction_options}}"
+
+  move_extent:
+    type: choice
+    include_when: "fanout == full || likely(move)"
+    instructions: >
+      Suppose this character walks in a direction. How far should they go before reconsidering?
+    criteria:
+      one_step: "A single step, to look around or reposition"
+      short: "A few tiles"
+      medium: "About the length of a room"
+      until_obstacle: "Keep going until blocked or arriving somewhere"
+
+  interact_target:
+    type: choice
+    include_when: "has_interactions && (fanout == full || likely(interact))"
+    instructions: >
+      Suppose this character interacts with something within reach. Which interaction would they perform?
+    criteria: "{{interaction_options}}"
+
+  use_item:
+    type: choice
+    include_when: "has_item_uses && (fanout == full || likely(use_item))"
+    instructions: >
+      Suppose this character uses an item they are holding or carrying. Which use would they choose?
+    criteria: "{{item_use_options}}"
+
+  inventory_action:
+    type: choice
+    include_when: "has_inventory_actions && (fanout == full || likely(inventory))"
+    instructions: >
+      Suppose this character rearranges their items. Which item action would they take?
+    criteria: "{{inventory_options}}"
+
+  speak_target:
+    type: choice
+    include_when: "has_listeners && (fanout == full || likely(speak))"
+    instructions: >
+      Suppose this character says something now. To whom would they speak?
+    criteria: "{{listener_options}}"
+
+  speak_intent:
+    type: choice
+    include_when: "has_listeners && (fanout == full || likely(speak))"
+    instructions: >
+      Suppose this character says something now. What would be the main purpose of what they say?
+    criteria:
+      greet: "Greet someone or introduce themselves"
+      ask: "Ask for something or ask a question"
+      inform: "Share information"
+      warn: "Warn about danger"
+      reply: "Reply to what was just said to them"
+      disagree: "Disagree, complain or refuse"
+      comfort: "Comfort, thank or encourage"
+
+  think_mode:
+    type: choice
+    include_when: "budget_allows_any && (fanout == full || likely(think))"
+    instructions: >
+      Suppose this character stops to think carefully. How deeply would they think?
+    criteria: "{{think_options}}"
+    # light: Think briefly about what to do next (cheap)
+    # deep: Reconsider plans thoroughly using everything they know (expensive)
+
+  sleep_where:
+    type: choice
+    include_when: "fatigue_band >= mild"
+    instructions: >
+      Suppose this character goes to sleep now. Where would they sleep?
+    criteria: "{{sleep_options}}"
+
+  goal_blocked:
+    type: noul
+    threshold_key: goal_blocked
+    include_when: "has_immediate_goal"
+    instructions: >
+      Does the character's first immediate goal appear impossible or blocked with the actions and
+      information currently available to them?
+
+  emotion:
+    type: choice
+    include_when: "decisions_since_emotion_check == emotion_every_n - 1"
+    instructions: >
+      Which emotion is this character most likely feeling right now, given everything above?
+    criteria:
+      joy: "Happiness, satisfaction, pleasure"
+      trust: "Feeling safe with, accepting or relying on others"
+      fear: "Feeling threatened, anxious or unsafe"
+      surprise: "Caught off guard by something unexpected"
+      sadness: "Loss, disappointment, loneliness"
+      disgust: "Revulsion or strong moral disapproval"
+      anger: "Frustration, irritation, hostility"
+      anticipation: "Eager or tense expectation of something coming"
+      neutral: "No notable emotion"
