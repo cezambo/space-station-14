@@ -77,6 +77,23 @@ public sealed class OpenAiCompatClient : ILlmClient, IDisposable
     public static int MaxCompletionTokens(LlmRequest request, LlmProviderConfig config) =>
         request.MaxOutputTokens + config.ReasoningAllowanceTokens;
 
+    internal static List<ChatMessage> InitialMessages(LlmRequest request)
+    {
+        var messages = new List<ChatMessage>();
+        if (!string.IsNullOrWhiteSpace(request.SystemPrompt))
+            messages.Add(new ChatMessage("system", request.SystemPrompt));
+        messages.Add(new ChatMessage("user", request.UserPrompt));
+        return messages;
+    }
+
+    /// <summary>The first-round request body; what the replay key hashes (RA-03).</summary>
+    public static string CanonicalRequest(LlmRequest request, LlmProviderConfig config)
+    {
+        var schema = request.JsonSchema is null ? null : JsonSchemaLite.Parse(request.JsonSchema);
+        return OpenAiWireFormat.SerializeRequest(config, InitialMessages(request), MaxCompletionTokens(request, config),
+            schema, request.PurposeTag);
+    }
+
     public async Task<LlmResponse> CompleteAsync(LlmRequest request, CancellationToken ct)
     {
         if (request.MaxOutputTokens <= 0)
@@ -85,10 +102,7 @@ public sealed class OpenAiCompatClient : ILlmClient, IDisposable
             throw new ArgumentException("UserPrompt must not be empty", nameof(request));
 
         var schema = request.JsonSchema is null ? null : _schemas.GetOrAdd(request.JsonSchema, JsonSchemaLite.Parse);
-        var messages = new List<ChatMessage>();
-        if (!string.IsNullOrWhiteSpace(request.SystemPrompt))
-            messages.Add(new ChatMessage("system", request.SystemPrompt));
-        messages.Add(new ChatMessage("user", request.UserPrompt));
+        var messages = InitialMessages(request);
 
         var total = new RoundTotals();
         var first = await RoundAsync(request, messages, schema, 1, total, ct);

@@ -17,7 +17,11 @@ public sealed record LlmRequest(
     string UserPrompt,
     string? JsonSchema,
     int MaxOutputTokens,
-    string PurposeTag);
+    string PurposeTag)
+{
+    /// <summary>Identifies the prompt template the request was rendered from (replay key, P7).</summary>
+    public string TemplateHash { get; init; } = string.Empty;
+}
 
 /// <summary>
 /// <see cref="Text"/> is the reply content; for schema requests it is the validated JSON without code fences.
@@ -38,6 +42,9 @@ public sealed record LlmResponse(string Text, UsageInfo Usage, string ModelId)
 
     /// <summary>False when the endpoint did not report <c>usage.cost</c> and USD was computed from configured prices.</summary>
     public bool CostReported { get; init; }
+
+    /// <summary>Served from a recording: <see cref="UsageInfo.CostUsd"/> is what it cost when recorded, not now.</summary>
+    public bool Replayed { get; init; }
 }
 
 public interface ILlmClient

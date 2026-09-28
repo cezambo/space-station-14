@@ -15,11 +15,15 @@ public sealed record ScoreQuestion(string Instructions, IReadOnlyList<string> Le
 public sealed record NoulQuestion(string Instructions, string? WhenTrue = null, string? WhenFalse = null)
     : JevQuestion(Instructions);
 
+/// <summary><see cref="TemplateHash"/> identifies the prompt template the questions came from (replay key, P7).</summary>
 public sealed record JevRequest(
     string Model,
     string State,
     IReadOnlyDictionary<string, JevQuestion> Questions,
-    string PurposeTag);
+    string PurposeTag)
+{
+    public string TemplateHash { get; init; } = string.Empty;
+}
 
 public abstract record JevAnswer;
 
@@ -51,6 +55,9 @@ public sealed record JevResponse(
 {
     public string Model { get; init; } = string.Empty;
     public int Attempts { get; init; } = 1;
+
+    /// <summary>Served from a recording: <see cref="UsageInfo.CostUsd"/> is what it cost when recorded, not now.</summary>
+    public bool Replayed { get; init; }
 }
 
 public interface IJevClient
