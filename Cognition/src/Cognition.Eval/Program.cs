@@ -2,15 +2,17 @@ namespace Cognition.Eval;
 
 public static class Program
 {
-    public static Task<int> Main(string[] args)
+    public static async Task<int> Main(string[] args)
     {
         if (args.Length == 0)
-            return Task.FromResult(Usage());
+            return Usage();
 
         return args[0] switch
         {
-            "check-config" => Task.FromResult(CheckConfigCommand.Run(args[1..])),
-            _ => Task.FromResult(Usage()),
+            "check-config" => CheckConfigCommand.Run(args[1..]),
+            "jev-ping" => await JevPingCommand.Run(args[1..]),
+            "jev-billing" => await JevBillingCommand.Run(args[1..]),
+            _ => Usage(),
         };
     }
 
@@ -21,6 +23,14 @@ public static class Program
 
             Commands:
               check-config [--config <path>]    Load and validate cognition.toml.
+              jev-ping --live --max-cost-usd <N> [--fixture <path>] [--dump <dir>]
+                                                One live Jev call (T1.03).
+              jev-billing --live --max-cost-usd <N> [--repeats 20] [--tiny-repeats 3]
+                          [--timeout-ms 10000] [--out <dir>]
+                                                Billing gate measurement (T1.03b).
+
+            Live commands refuse to run without --live and a cap no higher than
+            live_guard.max_cost_usd_per_run.
             """);
         return 2;
     }

@@ -1,0 +1,32 @@
+{
+  "purpose": "jev_ping",
+  "state": "Maya is a 29-year-old station engineer. She has been awake for a long shift and feels very tired. She is standing in the engineering break room. A sandwich is on the table within reach. Bob, a coworker she trusts, just said: \"The kitchen is on fire, can someone grab an extinguisher?\"",
+  "questions": {
+    "action_category": {
+      "type": "choice",
+      "instructions": "What kind of action should Maya take right now?",
+      "criteria": {
+        "eat": "Eat the sandwich on the table",
+        "help": "Go help with the fire in the kitchen",
+        "sleep": "Go to sleep",
+        "nothing": "Keep doing what she is doing"
+      }
+    },
+    "fatigue": {
+      "type": "score",
+      "instructions": "How tired does Maya seem?",
+      "criteria": [
+        "Fully rested and alert",
+        "Slightly tired but functioning normally",
+        "Clearly tired, would sleep if nothing urgent came up",
+        "Exhausted, struggling to stay awake"
+      ]
+    },
+    "danger_nearby": {
+      "type": "noul",
+      "instructions": "Is there an immediate danger somewhere on the station that Maya knows about?",
+      "when_true": "Maya has been told about or can perceive a current hazard",
+      "when_false": "Nothing suggests a current hazard"
+    }
+  }
+}

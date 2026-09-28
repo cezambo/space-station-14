@@ -1,0 +1,159 @@
+{
+  "purpose": "billing_gate",
+  "state_file": "state.txt",
+  "tiny_state": "Maya is a station engineer standing in the break room.",
+  "sets": {
+    "1": ["action_category"],
+    "5": ["action_category", "move_target", "move_direction", "move_extent", "goal_blocked"],
+    "10": ["action_category", "move_target", "move_direction", "move_extent", "goal_blocked",
+           "interact_target", "use_item", "inventory_action", "speak_target", "speak_intent"],
+    "13": ["action_category", "move_target", "move_direction", "move_extent", "goal_blocked",
+           "interact_target", "use_item", "inventory_action", "speak_target", "speak_intent",
+           "think_mode", "sleep_where", "emotion"]
+  },
+  "questions": {
+    "action_category": {
+      "type": "choice",
+      "instructions": "What kind of action should this character take right now? Choose \"nothing\" only if continuing the current action is clearly the best option.",
+      "criteria": {
+        "nothing": "Keep doing the current action",
+        "move": "Walk somewhere",
+        "interact": "Interact with something within reach",
+        "use_item": "Use an item being held or carried",
+        "inventory": "Rearrange, pick up, drop or store items",
+        "speak": "Say something to someone",
+        "think": "Stop to think carefully about plans",
+        "sleep": "Go to sleep"
+      }
+    },
+    "move_target": {
+      "type": "choice",
+      "instructions": "Suppose this character decides to walk somewhere now. Which destination would they choose? Pick \"none_of_these\" if no listed destination fits their goals.",
+      "criteria": {
+        "bob": "Walk over to Bob",
+        "chief_engineer": "Walk over to Chief Engineer Ruiz at the engineering console",
+        "grey_jumpsuit": "Follow the person in the grey jumpsuit",
+        "vending_machine": "Walk to the vending machine",
+        "engineering_locker": "Walk to the engineering locker",
+        "fire_alarm": "Walk to the fire alarm panel",
+        "kitchen_door": "Walk to the door to the kitchen",
+        "atmospherics_door": "Walk to the open door to atmospherics",
+        "east_corridor": "Walk back to the east maintenance corridor",
+        "none_of_these": "None of these destinations fits"
+      }
+    },
+    "move_direction": {
+      "type": "choice",
+      "instructions": "Suppose this character walks in a direction instead of to a named destination. Which direction best serves their goals, given what they perceive?",
+      "criteria": {
+        "north": "Toward the engineering console and the fire alarm",
+        "northeast": "Toward Bob and the kitchen",
+        "east": "Toward atmospherics and the east corridor",
+        "southeast": "Toward the cargo side of the station",
+        "south": "Toward the table and the medical bay",
+        "southwest": "Toward the lower workshop",
+        "west": "Toward the vending machine and security",
+        "northwest": "Toward the engineering locker and the dorm"
+      }
+    },
+    "move_extent": {
+      "type": "choice",
+      "instructions": "Suppose this character walks in a direction. How far should they go before reconsidering?",
+      "criteria": {
+        "one_step": "A single step, to look around or reposition",
+        "short": "A few tiles",
+        "medium": "About the length of a room",
+        "until_obstacle": "Keep going until blocked or arriving somewhere"
+      }
+    },
+    "goal_blocked": {
+      "type": "noul",
+      "instructions": "Does the character's first immediate goal appear impossible or blocked with the actions and information currently available to them?"
+    },
+    "interact_target": {
+      "type": "choice",
+      "instructions": "Suppose this character interacts with something within reach. Which interaction would they perform?",
+      "criteria": {
+        "pick_up_sandwich": "Pick up the sandwich from the table",
+        "pet_cat": "Pet the sleeping cat under the table",
+        "wipe_table": "Clear space on the table"
+      }
+    },
+    "use_item": {
+      "type": "choice",
+      "instructions": "Suppose this character uses an item they are holding or carrying. Which use would they choose?",
+      "criteria": {
+        "radio_engineering": "Call the engineering channel on the radio",
+        "radio_common": "Call the common channel on the radio",
+        "drink_water": "Drink from the water bottle",
+        "oxygen_tank": "Put on the emergency oxygen tank",
+        "read_map": "Look at the station map"
+      }
+    },
+    "inventory_action": {
+      "type": "choice",
+      "instructions": "Suppose this character rearranges their items. Which item action would they take?",
+      "criteria": {
+        "stow_welder": "Put the welding tool in the backpack to free the right hand",
+        "hold_wrench": "Take the wrench out of the tool belt",
+        "hold_multitool": "Take the multitool out of the tool belt",
+        "drop_metal": "Drop the two metal sheets from the backpack"
+      }
+    },
+    "speak_target": {
+      "type": "choice",
+      "instructions": "Suppose this character says something now. To whom would they speak?",
+      "criteria": {
+        "bob": "Bob, nearby to the northeast",
+        "chief_engineer": "Chief Engineer Ruiz, at the console to the north",
+        "grey_jumpsuit": "The unknown person in the grey jumpsuit",
+        "everyone": "Everyone within earshot"
+      }
+    },
+    "speak_intent": {
+      "type": "choice",
+      "instructions": "Suppose this character says something now. What would be the main purpose of what they say?",
+      "criteria": {
+        "greet": "Greet someone or introduce themselves",
+        "ask": "Ask for something or ask a question",
+        "inform": "Share information",
+        "warn": "Warn about danger",
+        "reply": "Reply to what was just said to them",
+        "disagree": "Disagree, complain or refuse",
+        "comfort": "Comfort, thank or encourage"
+      }
+    },
+    "think_mode": {
+      "type": "choice",
+      "instructions": "Suppose this character stops to think carefully. How deeply would they think?",
+      "criteria": {
+        "light": "Think briefly about what to do next (cheap)",
+        "deep": "Reconsider plans thoroughly using everything they know (expensive)"
+      }
+    },
+    "sleep_where": {
+      "type": "choice",
+      "instructions": "Suppose this character goes to sleep now. Where would they sleep?",
+      "criteria": {
+        "dorm_bed": "A bed in the engineering dorm",
+        "break_room_couch": "The couch in the break room",
+        "floor": "Right here on the floor"
+      }
+    },
+    "emotion": {
+      "type": "choice",
+      "instructions": "Which emotion is this character most likely feeling right now, given everything above?",
+      "criteria": {
+        "joy": "Happiness, satisfaction, pleasure",
+        "trust": "Feeling safe with, accepting or relying on others",
+        "fear": "Feeling threatened, anxious or unsafe",
+        "surprise": "Caught off guard by something unexpected",
+        "sadness": "Loss, disappointment, loneliness",
+        "disgust": "Revulsion or strong moral disapproval",
+        "anger": "Frustration, irritation, hostility",
+        "anticipation": "Eager or tense expectation of something coming",
+        "neutral": "No notable emotion"
+      }
+    }
+  }
+}
